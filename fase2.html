@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FASE 02 // IOT SERVER, MQTT & GRAFANA LAB MANUAL (HARI 31-60)</title>
+<style>
+  :root {
+    --bg-dark: #06080f;
+    --card-bg: rgba(11, 16, 29, 0.86);
+    --card-border: rgba(0, 243, 255, 0.28);
+    --cyan: #00f3ff;
+    --magenta: #ff007f;
+    --yellow: #fcee0a;
+    --green: #00ff88;
+    --text-main: #e2e8f0;
+    --text-muted: #94a3b8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  #bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: -2;
+  }
+  .vignette {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: radial-gradient(circle at center, rgba(6,8,15,0.25) 0%, rgba(6,8,15,0.88) 100%);
+    pointer-events: none;
+    z-index: -1;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 18px 80px;
+    position: relative;
+    z-index: 1;
+  }
+  .top-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: rgba(10, 15, 28, 0.92);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(12px);
+    padding: 12px 18px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    box-shadow: 0 0 25px rgba(0, 243, 255, 0.12);
+  }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 10px; }
+  .nav-btn {
+    text-decoration: none;
+    color: var(--cyan);
+    border: 1px solid rgba(0, 243, 255, 0.4);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    background: rgba(0, 243, 255, 0.06);
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: var(--cyan);
+    color: #050811;
+    box-shadow: 0 0 14px rgba(0, 243, 255, 0.6);
+  }
+  .nav-btn.next {
+    border-color: var(--magenta);
+    color: var(--magenta);
+    background: rgba(255, 0, 127, 0.08);
+  }
+  .nav-btn.next:hover {
+    background: var(--magenta);
+    color: #fff;
+    box-shadow: 0 0 14px rgba(255, 0, 127, 0.6);
+  }
+  header {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-left: 5px solid var(--magenta);
+    backdrop-filter: blur(14px);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(255, 0, 127, 0.18);
+    color: var(--magenta);
+    border: 1px solid var(--magenta);
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: 1.9rem;
+    color: #fff;
+    text-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+    margin-bottom: 8px;
+  }
+  .subtitle { color: var(--text-muted); font-size: 0.98rem; margin-bottom: 18px; }
+  .progress-wrap {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--cyan);
+  }
+  .progress-bar-bg {
+    width: 100%; height: 10px;
+    background: #131c31;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--cyan), var(--magenta));
+    transition: width 0.35s ease;
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .filter-btn {
+    background: rgba(15, 23, 42, 0.88);
+    color: var(--text-main);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: rgba(0, 243, 255, 0.12);
+  }
+  .week-title {
+    margin: 28px 0 14px;
+    padding: 10px 16px;
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.15), transparent);
+    border-left: 4px solid var(--cyan);
+    color: var(--cyan);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .day-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.25s;
+  }
+  .day-card:hover { border-color: rgba(0, 243, 255, 0.45); }
+  .day-card.completed { border-color: rgba(0, 255, 136, 0.5); }
+  .day-header {
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .day-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .day-tag {
+    background: rgba(0, 243, 255, 0.14);
+    color: var(--cyan);
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 243, 255, 0.35);
+  }
+  .day-title { font-weight: 700; font-size: 1.05rem; color: #f8fafc; }
+  .day-actions { display: flex; align-items: center; gap: 12px; }
+  .check-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--green);
+    cursor: pointer;
+    background: rgba(0, 255, 136, 0.08);
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+  }
+  .check-label input { accent-color: var(--green); width: 16px; height: 16px; cursor: pointer; }
+  .day-body {
+    padding: 0 20px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    display: none;
+  }
+  .day-card.open .day-body { display: block; }
+  .block-box {
+    margin-top: 14px;
+    padding: 14px;
+    background: rgba(6, 10, 20, 0.72);
+    border-radius: 8px;
+    border-left: 3px solid var(--yellow);
+  }
+  .block-title {
+    color: var(--yellow);
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+  .step-list { padding-left: 20px; color: #cbd5e1; font-size: 0.93rem; }
+  .step-list li { margin-bottom: 6px; }
+  .code-wrap {
+    position: relative;
+    margin: 10px 0;
+    background: #03050a;
+    border: 1px solid #1e293b;
+    border-radius: 7px;
+    overflow: hidden;
+  }
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f172a;
+    padding: 5px 12px;
+    font-size: 0.76rem;
+    color: var(--cyan);
+    font-family: monospace;
+  }
+  .copy-btn {
+    background: rgba(0, 243, 255, 0.15);
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
+    border-radius: 4px;
+    padding: 2px 9px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .copy-btn:hover { background: var(--cyan); color: #000; }
+  pre {
+    padding: 12px;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #a5f3fc;
+    line-height: 1.5;
+  }
+  .goal-box {
+    margin-top: 14px;
+    padding: 12px 15px;
+    background: rgba(0, 255, 136, 0.08);
+    border: 1px solid rgba(0, 255, 136, 0.35);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #d1fae5;
+  }
+  .goal-box strong { color: var(--green); }
+  .rest-card {
+    background: rgba(255, 0, 127, 0.08);
+    border: 1px dashed rgba(255, 0, 127, 0.45);
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    color: #fbcfe8;
+    font-size: 0.92rem;
+  }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<div class="vignette"></div>
+
+<div class="container">
+  <nav class="top-nav">
+    <div class="nav-links">
+      <a href="index.html" class="nav-btn">⌂ PORTAL UTAMA</a>
+      <a href="fase1.html" class="nav-btn">FASE 01 (HARI 1-30)</a>
+      <a href="fase2.html" class="nav-btn active">FASE 02 (HARI 31-60)</a>
+      <a href="fase3.html" class="nav-btn next">FASE 03 (HARI 61-90) →</a>
+    </div>
+    <div style="font-size:0.82rem; color:var(--cyan); font-family:monospace;">SYS.PHASE_02 // IOT_INFRASTRUCTURE</div>
+  </nav>
+
+  <header>
+    <span class="badge">FASE 02 // HARI 31 – 60 (180 JAM PRAKTIK)</span>
+    <h1>Ekosistem Server IoT, MQTT, InfluxDB, Grafana & Node-RED</h1>
+    <p class="subtitle">Panduan praktikum step-by-step membangun backend Smart Meter & sistem telemetri IoT real-time di atas server Linux.</p>
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span>PROGRES PENYELESAIAN FASE 02</span>
+        <span id="progress-text">0 / 26 Modul Selesai (0%)</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <button class="filter-btn active" onclick="filterWeek('all', this)">Semua Minggu (5–8)</button>
+    <button class="filter-btn" onclick="filterWeek('w5', this)">Minggu 5: MQTT Broker & Python</button>
+    <button class="filter-btn" onclick="filterWeek('w6', this)">Minggu 6: InfluxDB, Grafana & Node-RED</button>
+    <button class="filter-btn" onclick="filterWeek('w7', this)">Minggu 7: Edge Control, Modbus & Compose</button>
+    <button class="filter-btn" onclick="filterWeek('w8', this)">Minggu 8: Stress Test & Portofolio</button>
+    <button class="filter-btn" onclick="toggleAll()" style="margin-left:auto; border-color:var(--yellow); color:var(--yellow);">Buka / Tutup Semua Detail</button>
+  </div>
+
+  <!-- MINGGU 5 -->
+  <div class="week-section" data-week="w5">
+    <div class="week-title">MINGGU 05 // PROTOKOL MQTT BROKER & SIMULATOR SMART METER PYTHON</div>
+
+    <div class="day-card open" id="card-d31">
+      <div class="day-header" onclick="toggleCard('card-d31')">
+        <div class="day-meta">
+          <span class="day-tag">HARI 31</span>
+          <span class="day-title">Arsitektur IoT & Instalasi Eclipse Mosquitto MQTT Broker</span>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label"><input type="checkbox" data-day="d31" onchange="updateProgress()"> SELESAI</label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <div class="block-title">BLOK 1 (2 Jam) — Teori & Instalasi Mosquitto di Ubuntu Server</div>
+          <ol class="step-list">
+            <li>Pahami alur <strong>Publisher (Sensor) → Broker (Server) → Subscriber (Dashboard/DB)</strong> serta hierarki topik seperti <code>pln/gardu01/meter01/daya</code>.</li>
+            <li>Instal paket broker dan klien Mosquitto di server Ubuntu:</li>
+          </ol>
+          <div class="code-wrap">
+            <div class="code-header"><span>bash — Ubuntu Server</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+            <pre>sudo apt update && sudo apt install -y mosquitto mosquitto-clients
+sudo systemctl enable --now mosquitto
+sudo systemctl status mosquitto</pre>
+          </div>
+        </div>
+        <div class="block-box">
+          <div class="block-title">BLOK 2 & 3 (4 Jam) — Eksperimen Publish/Subscribe & QoS</div>
+          <ol class="step-list">
+            <li>Buka 2 tab terminal SSH ke server. Di Terminal 1, dengarkan semua topik menggunakan wildcard <code>#</code>:</li>
+          </ol>
+          <div class="code-wrap">
+            <div class="code-header"><span>bash — Terminal 1 (Subscriber)</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+            <pre>mosquitto_sub -h localhost -t "smartgrid/#" -v</pre>
+          </div>
+          <ol class="step-list" start="2">
+            <li>Di Terminal 2, kirim pesan simulasi dengan <strong>QoS 1</strong> dan flag <strong>Retained (<code>-r</code>)</strong> agar pesan terakhir tersimpan di broker:</li>
+          </ol>
+          <div class="code-wrap">
+            <div class="code-header"><span>bash — Terminal 2 (Publisher)</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+            <pre>mosquitto_pub -h localhost -t "smartgrid/meter01/status" -m "ONLINE" -q 1 -r
+mosquitto_pub -h localhost -t "smartgrid/meter01/volt" -m "221.5" -q 1</pre>
+          </div>
+        </div>
+        <div class="goal-box"><strong>GOAL HARI 31:</strong> Layanan <code>mosquitto</code> aktif di port <code>1883</code> (cek dengan <code>ss -tulpn | grep 1883</code>) dan pesan retained langsung muncul saat subscriber baru terhubung.</div>
+      </div>
+    </div>
+
+    <div class="day-card" id="card-d32">
+      <div class="day-header" onclick="toggleCard('card-d32')">
+        <div class="day-meta">
+          <span class="day-tag">HARI 32</span>
+          <span class="day-title">Pengamanan Akses Mosquitto (Autentikasi User & ACL Topic)</span>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label"><input type="checkbox" data-day="d32" onchange="updateProgress()"> SELESAI</label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <div class="block-title">BLOK 1-3 (6 Jam) — Matikan Akses Anonim & Buat File Password</div>
+          <ol class="step-list">
+            <li>Buat file kredensial khusus perangkat sensor dan server backend:</li>
+          </ol>
+          <div class="code-wrap">
+            <div class="code-header"><span>bash — Buat User MQTT</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+            <pre>sudo mosquitto_passwd -c /etc/mosquitto/passwd sensor_meter
+sudo mosquitto_passwd -b /etc/mosquitto/passwd backend_server RahasiaServer123</pre>
+          </div>
+          <ol class="step-list" start="2">
+            <li>Buat file konfigurasi kustom agar broker mendengarkan koneksi jaringan luar dengan autentikasi wajib:</li>
+          </ol>
+          <div class="code-wrap">
+            <div class="code-header"><span>bash — /etc/mosquitto/conf.d/custom.conf</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+            <pre>cat << 'EOF' | sudo tee /etc/mosquitto/conf.d/custom.conf
+listener 1883
+allow_anonymous false
+password_file /etc/mosquitto/passwd
+EOF
+sudo systemctl restart mosquitto
+sudo ufw allow 1883/tcp</pre>
+          </div>
+          <ol class="step-list" start="3">
+            <li>Uji coba koneksi tanpa password (harus ditolak: <em>Connection Refused: not authorised</em>), lalu uji ulang memakai flag <code>-u sensor_meter -P passwordmu</code>.</li>
+          </ol>
+        </div>
+        <div class="goal-box"><strong>GOAL HARI 32:</strong> Broker menolak semua koneksi anonim dan hanya menerima publikasi data dari klien ber-username valid.</div>
+      </div>
+    </div>
+
+    <div class="day-card" id="card-d33">
+      <div class="day-header" onclick="toggleCard('card-d33')">
+        <div class="day-meta">
+          <span class="day-tag">HARI 33-34</span>
+          <span class="day-title">Python Virtual Environment, Format JSON & Library Paho-MQTT</span>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label"><input type="checkbox" data-day="d33" onchange="updateProgress()"> SELESAI</label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <div class="block-title">Langkah Praktik (2 Hari / 12 Jam) — Lingkungan Python IoT</div>
+          <ol class="step-list">
+            <li>Siapkan folder proyek IoT dan virtual environment Python agar tidak mengotori sistem OS:</li>
+          </ol>
+          <div class="code-wrap">
+            <div class="code-header"><span>bash — Setup Python Venv</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+            <pre>sudo apt install -y python3-venv python3-pip
+mkdir -p ~/iot-project && cd ~/iot-project
+python3 -m venv venv
+source venv/bin/activate
+pip install paho-mqtt influxdb-client pymodbus</pre>
+          </div>
+          <ol class="step-list" start="2">
+            <li>Pelajari serialisasi data sensor dalam format JSON (<code>json.dumps()</code> dan <code>json.loads()</code>) yang memuat timestamp, ID meter, tegangan (V), arus (A), daya (W), dan kWh.</li>
+          </ol>
+        </div>
+        <div class="goal-box"><strong>GOAL HARI 33-34:</strong> Lingkungan <code>~/iot-project/venv</code> aktif dan mampu mengirim payload JSON valid ke Mosquitto lewat skrip Python sederhana.</div>
+      </div>
+    </div>
+
+    <div class="day-card" id="card-d35">
+      <div class="day-header" onclick="toggleCard('card-d35')">
+        <div class="day-meta">
+          <span class="day-tag">HARI 35-36</span>
+          <span class="day-title">Proyek Simulator 5 Smart Meter & Worker Pendeteksi Anomali</span>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label"><input type="checkbox" data-day="d35" onchange="updateProgress()"> SELESAI</label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <div class="block-title">Hari 35 — Buat Skrip Publisher Simulator (simulator_meter.py)</div>
+          <div class="code-wrap">
+            <div class="code-header"><span>python — ~/iot-project/simulator_meter.py</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+            <pre>import time, json, random
+import paho.mqtt.client as mqtt
+
+BROKER = "127.0.0.1"
+USER = "sensor_meter"
+PASS = "GantiPasswordSensor"
+METERS = ["MTR-1001", "MTR-1002", "MTR-1003", "MTR-1004", "MTR-1005"]
+
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+client.username_pw_set(USER, PASS)
+client.connect(BROKER, 1883, 60)
+
+while True:
+    for m in METERS:
+        volt = round(random.uniform(215.0, 232.0), 2)
+        amp = round(random.uniform(1.2, 16.5), 2)
+        watt = round(volt * amp, 2)
+        payload = json.dumps({"meter_id": m, "voltage": volt, "current": amp, "power_w": watt})
+        client.publish(f"pln/smartmeter/{m}/telemetry", payload, qos=1)
+        print(f"[SENT] {m}: {payload}")
+    time.sleep(3)</pre>
+          </div>
+        </div>
+        <div class="block-box">
+          <div class="block-title">Hari 36 — Buat Skrip Subscriber Alarm Beban Berlebih (alert_worker.py)</div>
+          <ol class="step-list">
+            <li>Buat skrip subscriber yang memantau topik <code>pln/smartmeter/+/telemetry</code> dan mencetak peringatan merah jika <code>power_w &gt; 3500</code> Watt (simulasi MCB hampir trip).</li>
+          </ol>
+        </div>
+        <div class="goal-box"><strong>GOAL HARI 35-36:</strong> Kedua skrip berjalan bersamaan di 2 terminal; setiap lonjakan daya &gt;3500W langsung terdeteksi secara real-time.</div>
+      </div>
+    </div>
+
+    <div class="rest-card"><strong>HARI 37 // ISTIRAHAT TOTAL (SYSTEM RECOVERY):</strong> Lepas dari layar teknis untuk pemulihan fokus sebelum masuk ke database Time-Series & Grafana.</div>
+  </div>
+
+  <!-- MINGGU 6 -->
+  <div class="week-section" data-week="w6">
+    <div class="week-title">MINGGU 06 // DATABASE INFLUXDB, DASHBOARD GRAFANA & OTOMASI NODE-RED</div>
+
+    <div class="day-card" id="card-d38">
+      <div class="day-header" onclick="toggleCard('card-d38')">
+        <div class="day-meta">
+          <span class="day-tag">HARI 38-39</span>
+          <span class="day-title">Deploy InfluxDB 2.x & Jembatan Penyimpan Data MQTT ke Database</span>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label"><input type="checkbox" data-day="d38" onchange="updateProgress()"> SELESAI</label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <div class="block-title">Hari 38 — Jalankan InfluxDB via Docker & Buat API Token</div>
+          <div class="code-wrap">
+            <div class="code-header"><span>bash — Jalankan InfluxDB</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+            <pre>docker run -d --name influxdb -p 8086:8086 -v influxdb_data:/var/lib/influxdb2 influxdb:2.7</pre>
+          </div>
+          <ol class="step-list">
+            <li>Buka browser ke <code>http://IP-SERVER:8086</code>, buat akun admin, Organization: <code>pln_iot</code>, Bucket: <code>smartmeter_db</code>, dan salin <strong>API Token</strong> yang muncul.</li>
+          </ol>
+        </div>
+        <div class="block-box">
+          <div class="block-title">Hari 39 — Skrip Bridge MQTT ke InfluxDB (mqtt_to_influx.py)</div>
+          <div class="code-wrap">
+            <div class="code-header"><span>python — mqtt_to_influx.py</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+            <pre>import json
+import paho.mqtt.client as mqtt
+from influxdb_client import InfluxDBClient, Point
+from influxdb_client.client.write_api import SYNCHRONOUS
+
+influx = InfluxDBClient(url="http://localhost:8086", token="TEMPEL_TOKEN_DISINI", org="pln_iot")
+write_api = influx.write_api(write_options=SYNCHRONOUS)
+
+def on_message(client, userdata, msg):
+    data = json.loads(msg.payload.decode())
+    p = Point("electricity").tag("meter_id", data["meter_id"])         .field("voltage", float(data["voltage"]))         .field("current", float(data["current"]))         .field("power_w", float(data["power_w"]))
+    write_api.write(bucket="smartmeter_db", record=p)
+    print("Saved to InfluxDB:", data["meter_id"])
+
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+client.username_pw_set("backend_server", "RahasiaServer123")
+client.on_message = on_message
+client.connect("127.0.0.1", 1883)
+client.subscribe("pln/smartmeter/+/telemetry")
+client.loop_forever()</pre>
+          </div>
+        </div>
+        <div class="goal-box"><strong>GOAL HARI 38-39:</strong> Data dari simulator masuk otomatis ke tabel <em>Data Explorer</em> di dashboard web InfluxDB.</div>
+      </div>
+    </div>
+
+    <div class="day-card" id="card-d40">
+      <div class="day-header" onclick="toggleCard('card-d40')">
+        <div class="day-meta">
+          <span class="day-tag">HARI 40-41</span>
+          <span class="day-title">Visualisasi Real-Time Smart Grid dengan Grafana</span>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label"><input type="checkbox" data-day="d40" onchange="updateProgress()"> SELESAI</label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <div class="block-title">Langkah Praktik (2 Hari / 12 Jam) — Dashboard Pemantauan Energi</div>
+          <ol class="step-list">
+            <li>Jalankan kontainer Grafana di port <code>3000</code>:</li>
+          </ol>
+          <div class="code-wrap">
+            <div class="code-header"><span>bash — Deploy Grafana</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+            <pre>docker run -d --name grafana -p 3000:3000 -v grafana_data:/var/lib/grafana grafana/grafana-oss</pre>
+          </div>
+          <ol class="step-list" start="2">
+            <li>Buka <code>http://IP-SERVER:3000</code> (login default: <code>admin</code> / <code>admin</code>).</li>
+            <li>Masuk ke <strong>Connections → Data Sources → Add data source → InfluxDB</strong>. Pilih Query Language: <strong>Flux</strong>, URL: <code>http://IP-SERVER:8086</code>, isi Organization, Token, dan Default Bucket <code>smartmeter_db</code>.</li>
+            <li>Buat Dashboard baru dengan 3 panel: <strong>Time Series Graph</strong> (grafik daya Watt per meter), <strong>Gauge</strong> (tegangan Volt saat ini), dan <strong>Stat Panel</strong> (status online/offline). Set auto-refresh ke <code>5s</code>.</li>
+          </ol>
+        </div>
+        <div class="goal-box"><strong>GOAL HARI 40-41:</strong> Grafik pemakaian daya dari 5 Smart Meter bergerak live di Grafana tanpa delay.</div>
+      </div>
+    </div>
+
+    <div class="day-card" id="card-d42">
+      <div class="day-header" onclick="toggleCard('card-d42')">
+        <div class="day-meta">
+          <span class="day-tag">HARI 42-43</span>
+          <span class="day-title">Otomasi Alur Kerja IoT dengan Node-RED & Notifikasi Telegram</span>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label"><input type="checkbox" data-day="d42" onchange="updateProgress()"> SELESAI</label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <div class="block-title">Langkah Praktik (2 Hari / 12 Jam) — Flow Deteksi Pemadaman Listrik</div>
+          <ol class="step-list">
+            <li>Jalankan Node-RED di port <code>1880</code>:</li>
+          </ol>
+          <div class="code-wrap">
+            <div class="code-header"><span>bash — Deploy Node-RED</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+            <pre>docker run -d --name nodered -p 1880:1880 -v nodered_data:/data nodered/node-red</pre>
+          </div>
+          <ol class="step-list" start="2">
+            <li>Buat bot Telegram lewat <code>@BotFather</code> untuk memperoleh <strong>Bot Token</strong>, dan cek <strong>Chat ID</strong> kamu via <code>@userinfobot</code>.</li>
+            <li>Buka <code>http://IP-SERVER:1880</code>, rangkai node: <strong>MQTT In</strong> (subscribe topik meter) → <strong>JSON Parser</strong> → <strong>Switch Node</strong> (cek jika <code>payload.voltage &lt; 180</code>) → <strong>HTTP Request Node</strong> (kirim pesan peringatan ke API Telegram <code>https://api.telegram.org/bot&lt;TOKEN&gt;/sendMessage</code>).</li>
+          </ol>
+        </div>
+        <div class="goal-box"><strong>GOAL HARI 42-43:</strong> Saat tegangan simulasi diturunkan di bawah 180V, notifikasi langsung masuk ke HP Telegram dalam &lt;2 detik.</div>
+      </div>
+    </div>
+
+    <div class="rest-card"><strong>HARI 44 // ISTIRAHAT TOTAL:</strong> Matikan sejenak simulasi atau biarkan berjalan di latar belakang, istirahatkan mata dan pikiran.</div>
+  </div>
+
+  <!-- MINGGU 7 -->
+  <div class="week-section" data-week="w7">
+    <div class="week-title">MINGGU 07 // KONTROL DUA ARAH, PROTOKOL MODBUS TCP & FULL DOCKER COMPOSE</div>
+
+    <div class="day-card" id="card-d45">
+      <div class="day-header" onclick="toggleCard('card-d45')">
+        <div class="day-meta">
+          <span class="day-tag">HARI 45-47</span>
+          <span class="day-title">Remote Control Relai Dua Arah (Simulasi Pemutusan Listrik Jarak Jauh)</span>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label"><input type="checkbox" data-day="d45" onchange="updateProgress()"> SELESAI</label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <div class="block-title">Langkah Praktik (3 Hari / 18 Jam) — Command & Response Pattern</div>
+          <ol class="step-list">
+            <li>Jika memiliki perangkat fisik <strong>ESP32</strong>, gunakan Arduino IDE + library <code>PubSubClient</code> untuk membaca sensor dan mengontrol pin GPIO relai. Jika tanpa perangkat fisik, kembangkan <code>simulator_meter.py</code> agar juga melakukan <code>subscribe</code> ke topik perintah <code>pln/smartmeter/MTR-1001/command</code>.</li>
+            <li>Ketika server atau tombol dashboard Node-RED mengirim payload <code>{"relay": "OFF"}</code>, simulator mengubah status relai menjadi <code>OPEN</code> dan menghentikan aliran daya (<code>power_w = 0</code>), lalu mengirim balik status konfirmasi ke topik <code>pln/smartmeter/MTR-1001/ack</code>.</li>
+          </ol>
+        </div>
+        <div class="goal-box"><strong>GOAL HARI 45-47:</strong> Mampu memutus dan menyambung kembali simulasi aliran listrik meteran dari tombol dashboard Node-RED.</div>
+      </div>
+    </div>
+
+    <div class="day-card" id="card-d48">
+      <div class="day-header" onclick="toggleCard('card-d48')">
+        <div class="day-meta">
+          <span class="day-tag">HARI 48-49</span>
+          <span class="day-title">Simulasi Protokol Industri Modbus TCP (SCADA / Gardu Induk)</span>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label"><input type="checkbox" data-day="d48" onchange="updateProgress()"> SELESAI</label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <div class="block-title">Langkah Praktik (2 Hari / 12 Jam) — Holding Registers Modbus</div>
+          <ol class="step-list">
+            <li>Pelajari konsep <em>Coils</em>, <em>Discrete Inputs</em>, <em>Input Registers</em>, dan <em>Holding Registers</em> yang umum dipakai pada KWh meter industri & PLC gardu listrik.</li>
+            <li>Jalankan server simulasi Modbus TCP di port <code>5020</code> menggunakan Python <code>pymodbus</code> yang menyimpan nilai frekuensi listrik (5000 = 50.00 Hz) pada Register 0, lalu buat skrip klien pembaca register tersebut dan meneruskannya ke MQTT Broker (fungsi <em>Protocol Gateway</em>).</li>
+          </ol>
+        </div>
+        <div class="goal-box"><strong>GOAL HARI 48-49:</strong> Berhasil membangun skrip <em>Modbus-to-MQTT Gateway</em> sederhana di Linux.</div>
+      </div>
+    </div>
+
+    <div class="day-card" id="card-d50">
+      <div class="day-header" onclick="toggleCard('card-d50')">
+        <div class="day-meta">
+          <span class="day-tag">HARI 50</span>
+          <span class="day-title">Orkestrasi Seluruh Ekosistem IoT dalam 1 File docker-compose.yml</span>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label"><input type="checkbox" data-day="d50" onchange="updateProgress()"> SELESAI</label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <div class="block-title">BLOK 1-3 (6 Jam) — Migrasi Kontainer Terpisah Menjadi Satu Stack</div>
+          <ol class="step-list">
+            <li>Hentikan kontainer manual sebelumnya (<code>docker stop influxdb grafana nodered && docker rm influxdb grafana nodered</code>) namun pertahankan volume datanya.</li>
+            <li>Buat file <code>~/iot-project/docker-compose.yml</code> untuk menyatukan <strong>InfluxDB, Grafana, dan Node-RED</strong> dalam satu jaringan internal Docker:</li>
+          </ol>
+          <div class="code-wrap">
+            <div class="code-header"><span>yaml — ~/iot-project/docker-compose.yml</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+            <pre>services:
+  influxdb:
+    image: influxdb:2.7
+    container_name: iot_influxdb
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+
+  grafana:
+    image: grafana/grafana-oss
+    container_name: iot_grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - influxdb
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+  nodered:
+    image: nodered/node-red
+    container_name: iot_nodered
+    restart: unless-stopped
+    ports:
+      - "1880:1880"
+    volumes:
+      - nodered_data:/data
+
+volumes:
+  influxdb_data:
+  grafana_data:
+  nodered_data:</pre>
+          </div>
+          <ol class="step-list" start="3">
+            <li>Jalankan seluruh infrastruktur dengan satu perintah: <code>docker compose up -d</code>.</li>
+          </ol>
+        </div>
+        <div class="goal-box"><strong>GOAL HARI 50:</strong> Seluruh layanan backend IoT menyala bersamaan lewat <code>docker compose up -d</code> dengan kebijakan <code>restart: unless-stopped</code>.</div>
+      </div>
+    </div>
+
+    <div class="rest-card"><strong>HARI 51 // ISTIRAHAT TOTAL:</strong> Pemulihan energi sebelum minggu terakhir Fase 02 (pengujian beban & publikasi portofolio).</div>
+  </div>
+
+  <!-- MINGGU 8 -->
+  <div class="week-section" data-week="w8">
+    <div class="week-title">MINGGU 08 // STRESS TESTING, AUTO-RECOVERY & DOKUMENTASI GITHUB</div>
+
+    <div class="day-card" id="card-d52">
+      <div class="day-header" onclick="toggleCard('card-d52')">
+        <div class="day-meta">
+          <span class="day-tag">HARI 52-54</span>
+          <span class="day-title">Stress Testing 100 Smart Meter Simultan & Optimasi Performa</span>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label"><input type="checkbox" data-day="d52" onchange="updateProgress()"> SELESAI</label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <div class="block-title">Langkah Praktik (3 Hari / 18 Jam) — Simulasi Beban Skala Gardu</div>
+          <ol class="step-list">
+            <li>Modifikasi skrip simulator menggunakan modul <code>threading</code> Python agar menyimulasikan <strong>100 perangkat meteran</strong> mengirim data setiap 1 detik (100 pesan/detik).</li>
+            <li>Pantau konsumsi CPU, RAM, dan Disk I/O secara langsung dengan perintah <code>htop</code> dan <code>docker stats</code>.</li>
+            <li>Optimasi penulisan database di <code>mqtt_to_influx.py</code> dari mode <code>SYNCHRONOUS</code> menjadi <strong>Batching Write</strong> (kirim per 50 data atau setiap 1 detik) agar penggunaan CPU turun drastis.</li>
+          </ol>
+        </div>
+        <div class="goal-box"><strong>GOAL HARI 52-54:</strong> Server mampu memproses 100 pesan/detik selama 30 menit tanpa ada pesan hilang atau lonjakan CPU 100%.</div>
+      </div>
+    </div>
+
+    <div class="day-card" id="card-d55">
+      <div class="day-header" onclick="toggleCard('card-d55')">
+        <div class="day-meta">
+          <span class="day-tag">HARI 55</span>
+          <span class="day-title">Konfigurasi Auto-Recovery Layanan Python via Systemd</span>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label"><input type="checkbox" data-day="d55" onchange="updateProgress()"> SELESAI</label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <div class="block-title">BLOK 1-3 (6 Jam) — Jadikan Worker Backend Berjalan Otomatis Saat Booting</div>
+          <ol class="step-list">
+            <li>Daftarkan <code>mqtt_to_influx.py</code> sebagai layanan sistem Linux agar langsung hidup saat server menyala ulang:</li>
+          </ol>
+          <div class="code-wrap">
+            <div class="code-header"><span>bash — /etc/systemd/system/iot-bridge.service</span><button class="copy-btn" onclick="copyCode(this)">COPY</button></div>
+            <pre>cat << EOF | sudo tee /etc/systemd/system/iot-bridge.service
+[Unit]
+Description=MQTT to InfluxDB Bridge Service
+After=network.target mosquitto.service docker.service
+
+[Service]
+User=$USER
+WorkingDirectory=/home/$USER/iot-project
+ExecStart=/home/$USER/iot-project/venv/bin/python /home/$USER/iot-project/mqtt_to_influx.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo systemctl daemon-reload
+sudo systemctl enable --now iot-bridge</pre>
+          </div>
+          <ol class="step-list" start="2">
+            <li>Uji coba dengan perintah <code>sudo reboot</code>, lalu setelah server hidup kembali pastikan seluruh layanan (Mosquitto, Docker Compose, dan <code>iot-bridge</code>) langsung aktif tanpa campur tangan manual.</li>
+          </ol>
+        </div>
+        <div class="goal-box"><strong>GOAL HARI 55:</strong> Sistem IoT pulih otomatis 100% dalam waktu &lt;30 detik setelah server di-reboot.</div>
+      </div>
+    </div>
+
+    <div class="day-card" id="card-d56">
+      <div class="day-header" onclick="toggleCard('card-d56')">
+        <div class="day-meta">
+          <span class="day-tag">HARI 56-59</span>
+          <span class="day-title">Publikasi Repositori Portofolio IoT ke GitHub & Audit Kerentanan Awal</span>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label"><input type="checkbox" data-day="d56" onchange="updateProgress()"> SELESAI</label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <div class="block-title">Langkah Praktik (4 Hari / 24 Jam) — Dokumentasi Proyek Kedua</div>
+          <ol class="step-list">
+            <li>Bersihkan token/password asli dari kode Python (ganti dengan file <code>.env.example</code> dan tambahkan <code>.env</code> serta <code>venv/</code> ke dalam <code>.gitignore</code>).</li>
+            <li>Unggah <code>docker-compose.yml</code>, <code>simulator_meter.py</code>, <code>mqtt_to_influx.py</code>, serta tangkapan layar dashboard Grafana ke repositori GitHub baru bernama <code>smart-grid-iot-telemetry</code>.</li>
+            <li>Catat daftar celah keamanan yang masih ada pada servermu saat ini (contoh: MQTT masih memakai port <code>1883</code> tanpa enkripsi TLS, lalu lintas data masih terbaca telanjang) sebagai bahan serangan pada <strong>Fase 03</strong>.</li>
+          </ol>
+        </div>
+        <div class="goal-box"><strong>GOAL HARI 56-59:</strong> Repositori GitHub proyek IoT siap ditampilkan di CV, dan daftar target celah keamanan siap diuji dengan Kali Linux di Hari 61.</div>
+      </div>
+    </div>
+
+    <div class="rest-card"><strong>HARI 60 // ISTIRAHAT TOTAL (SELESAI FASE 02):</strong> Selamat! Kamu telah menyelesaikan 360 jam praktik infrastruktur Linux & IoT. Siapkan VM/Termux Kali Linux untuk memulai Fase 03 besok.</div>
+  </div>
+</div>
+
+<script>
+// 3D Cyberpunk Canvas Engine
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let w, h, mouseX = 0, mouseY = 0;
+
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+window.addEventListener('mousemove', e => {
+  mouseX = (e.clientX / w - 0.5) * 2;
+  mouseY = (e.clientY / h - 0.5) * 2;
+});
+resize();
+
+const nodes = Array.from({length: 28}, () => ({
+  x: (Math.random() - 0.5) * 1400,
+  y: (Math.random() - 0.5) * 800,
+  z: Math.random() * 1000 + 200,
+  size: Math.random() * 18 + 8,
+  rot: Math.random() * Math.PI * 2,
+  speed: Math.random() * 0.015 + 0.005,
+  color: Math.random() > 0.5 ? '#00f3ff' : '#ff007f'
+}));
+
+let gridOffset = 0;
+function draw3D() {
+  ctx.fillStyle = '#06080f';
+  ctx.fillRect(0, 0, w, h);
+
+  const horizon = h * 0.52 + mouseY * 25;
+  const centerX = w * 0.5 + mouseX * 40;
+
+  // Perspective Floor Grid
+  ctx.strokeStyle = 'rgba(0, 243, 255, 0.16)';
+  ctx.lineWidth = 1;
+  for (let i = -14; i <= 14; i++) {
+    ctx.beginPath();
+    ctx.moveTo(centerX + i * 35, horizon);
+    ctx.lineTo(centerX + i * 260, h);
+    ctx.stroke();
+  }
+  gridOffset = (gridOffset + 1.2) % 40;
+  for (let z = 1; z < 16; z++) {
+    const progress = (z * 40 + gridOffset) / 640;
+    const y = horizon + Math.pow(progress, 2.1) * (h - horizon);
+    ctx.strokeStyle = `rgba(255, 0, 127, ${progress * 0.25})`;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
+  }
+
+  // Floating 3D Wireframe Diamonds
+  nodes.forEach(n => {
+    n.z -= 1.4;
+    n.rot += n.speed;
+    if (n.z < 120) n.z = 1200;
+    const scale = 420 / n.z;
+    const sx = centerX + n.x * scale;
+    const sy = horizon + n.y * scale;
+    const r = n.size * scale;
+
+    ctx.save();
+    ctx.translate(sx, sy);
+    ctx.rotate(n.rot);
+    ctx.strokeStyle = n.color;
+    ctx.globalAlpha = Math.min(0.55, scale * 0.5);
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(0, -r);
+    ctx.lineTo(r * 0.85, 0);
+    ctx.lineTo(0, r);
+    ctx.lineTo(-r * 0.85, 0);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.restore();
+  });
+
+  requestAnimationFrame(draw3D);
+}
+draw3D();
+
+// Interactive Accordion & Progress Persistence
+function toggleCard(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+let allOpen = false;
+function toggleAll() {
+  allOpen = !allOpen;
+  document.querySelectorAll('.day-card').forEach(c => {
+    c.classList.toggle('open', allOpen);
+  });
+}
+
+function filterWeek(week, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.week-section').forEach(sec => {
+    sec.style.display = (week === 'all' || sec.dataset.week === week) ? 'block' : 'none';
+  });
+}
+
+function copyCode(btn) {
+  const code = btn.parentElement.nextElementSibling.innerText;
+  navigator.clipboard.writeText(code);
+  const orig = btn.innerText;
+  btn.innerText = 'COPIED!';
+  btn.style.background = '#00ff88';
+  btn.style.color = '#000';
+  setTimeout(() => {
+    btn.innerText = orig;
+    btn.style.background = '';
+    btn.style.color = '';
+  }, 1500);
+}
+
+const STORAGE_KEY = 'cyberpunk_roadmap_progress_v1';
+function loadProgress() {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  document.querySelectorAll('input[data-day]').forEach(cb => {
+    if (saved[cb.dataset.day]) {
+      cb.checked = true;
+      cb.closest('.day-card').classList.add('completed');
+    }
+  });
+  renderBar();
+}
+
+function updateProgress() {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  document.querySelectorAll('input[data-day]').forEach(cb => {
+    saved[cb.dataset.day] = cb.checked;
+    cb.closest('.day-card').classList.toggle('completed', cb.checked);
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+  renderBar();
+}
+
+function renderBar() {
+  const cbs = document.querySelectorAll('input[data-day]');
+  const done = Array.from(cbs).filter(c => c.checked).length;
+  const total = cbs.length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('progress-text').innerText = `${done} / ${total} Modul Selesai (${pct}%)`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+loadProgress();
+</script>
+</body>
+</html>

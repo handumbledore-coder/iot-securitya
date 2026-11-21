@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FASE 03 // IoT Security, Kali Linux & Career Blueprint (Hari 61-90)</title>
+<style>
+  :root {
+    --bg-dark: #06080f;
+    --card-bg: rgba(12, 18, 32, 0.86);
+    --cyan: #00f3ff;
+    --magenta: #ff007f;
+    --yellow: #fcee0a;
+    --green: #00ff88;
+    --text-main: #e2e8f0;
+    --text-dim: #94a3b8;
+    --border-glow: rgba(0, 243, 255, 0.35);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  #bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: -2;
+    pointer-events: none;
+  }
+  .vignette {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 20%, rgba(4, 6, 12, 0.88) 100%);
+    z-index: -1;
+    pointer-events: none;
+  }
+  .container {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 24px 18px 80px;
+  }
+  nav.top-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: rgba(10, 15, 28, 0.9);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--border-glow);
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    position: sticky;
+    top: 10px;
+    z-index: 50;
+    box-shadow: 0 0 25px rgba(0, 243, 255, 0.12);
+  }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-main);
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.12);
+    transition: 0.25s;
+    letter-spacing: 0.5px;
+  }
+  .nav-links a:hover { border-color: var(--cyan); color: var(--cyan); }
+  .nav-links a.active {
+    background: linear-gradient(90deg, rgba(255, 0, 127, 0.25), rgba(0, 243, 255, 0.25));
+    border-color: var(--magenta);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(255, 0, 127, 0.35);
+  }
+  .progress-pill {
+    font-family: 'Consolas', monospace;
+    font-size: 0.85rem;
+    color: var(--yellow);
+    background: rgba(252, 238, 10, 0.1);
+    border: 1px solid rgba(252, 238, 10, 0.4);
+    padding: 6px 12px;
+    border-radius: 20px;
+  }
+  header.hero {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--magenta);
+    border-left: 5px solid var(--magenta);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+  }
+  .badge {
+    display: inline-block;
+    font-family: 'Consolas', monospace;
+    font-size: 0.78rem;
+    color: var(--bg-dark);
+    background: var(--magenta);
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  header.hero h1 {
+    font-size: 1.85rem;
+    color: #fff;
+    text-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+    margin-bottom: 8px;
+  }
+  header.hero p { color: var(--text-dim); font-size: 0.96rem; }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .btn {
+    background: rgba(15, 23, 42, 0.9);
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn:hover, .btn.active {
+    background: var(--cyan);
+    color: #050811;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.45);
+  }
+  .week-title {
+    margin: 30px 0 14px;
+    padding: 10px 16px;
+    background: linear-gradient(90deg, rgba(255, 0, 127, 0.18), transparent);
+    border-left: 4px solid var(--magenta);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+  .day-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(0, 243, 255, 0.22);
+    border-radius: 10px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: border-color 0.25s;
+  }
+  .day-card.done { border-color: var(--green); }
+  .day-header {
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .day-header:hover { background: rgba(0, 243, 255, 0.05); }
+  .day-tag {
+    font-family: 'Consolas', monospace;
+    color: var(--cyan);
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: block;
+  }
+  .day-title { font-size: 1.05rem; font-weight: 700; color: #fff; }
+  .day-actions { display: flex; align-items: center; gap: 12px; }
+  .check-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-family: 'Consolas', monospace;
+    color: var(--green);
+    background: rgba(0, 255, 136, 0.08);
+    border: 1px solid rgba(0, 255, 136, 0.35);
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .check-label input { accent-color: var(--green); width: 15px; height: 15px; cursor: pointer; }
+  .day-body {
+    display: none;
+    padding: 0 20px 20px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .day-card.open .day-body { display: block; }
+  .block-box {
+    margin-top: 14px;
+    padding: 14px;
+    background: rgba(6, 10, 20, 0.72);
+    border-left: 3px solid var(--cyan);
+    border-radius: 6px;
+  }
+  .block-box h4 {
+    color: var(--yellow);
+    font-size: 0.92rem;
+    margin-bottom: 6px;
+    font-family: 'Consolas', monospace;
+  }
+  .block-box p, .block-box li { font-size: 0.92rem; color: var(--text-main); }
+  .block-box ul { padding-left: 20px; margin-top: 6px; }
+  .code-wrap {
+    position: relative;
+    margin: 10px 0;
+    background: #03050a;
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    border-radius: 6px;
+    padding: 12px 14px;
+    overflow-x: auto;
+  }
+  pre {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.84rem;
+    color: #38bdf8;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(0, 243, 255, 0.15);
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
+    font-family: 'Consolas', monospace;
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .copy-btn:hover { background: var(--cyan); color: #000; }
+  .goal-box {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(0, 255, 136, 0.08);
+    border: 1px solid rgba(0, 255, 136, 0.4);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #d1fae5;
+  }
+  .goal-box strong { color: var(--green); }
+  .rest-card {
+    background: rgba(252, 238, 10, 0.07);
+    border: 1px dashed rgba(252, 238, 10, 0.45);
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    color: var(--yellow);
+    font-size: 0.92rem;
+  }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<div class="vignette"></div>
+
+<div class="container">
+  <nav class="top-nav">
+    <div class="nav-links">
+      <a href="index.html">PORTAL</a>
+      <a href="fase1.html">FASE 01 (HARI 1-30)</a>
+      <a href="fase2.html">FASE 02 (HARI 31-60)</a>
+      <a href="fase3.html" class="active">FASE 03 (HARI 61-90)</a>
+    </div>
+    <div class="progress-pill" id="phase-progress">PROGRES FASE 03: 0 / 26 MODUL</div>
+  </nav>
+
+  <header class="hero">
+    <span class="badge">FASE 03 // RED TEAMING, HARDENING & CAREER</span>
+    <h1>IoT Security (Kali Linux) & Kesiapan Karier (Hari 61 – 90)</h1>
+    <p>Uji celah keamanan sistem IoT Smart Meter dari Kali Linux, tutup kerentanan dengan enkripsi MQTTS & Fail2Ban, bangun Capstone Project, hingga simulasi wawancara kerja.</p>
+  </header>
+
+  <div class="controls">
+    <button class="btn active" onclick="filterWeek('all', this)">Semua Minggu (9-12)</button>
+    <button class="btn" onclick="filterWeek('w9', this)">Minggu 9: Kali Linux Pentest</button>
+    <button class="btn" onclick="filterWeek('w10', this)">Minggu 10: Firmware & Hardening</button>
+    <button class="btn" onclick="filterWeek('w11', this)">Minggu 11: Capstone & Portofolio</button>
+    <button class="btn" onclick="filterWeek('w12', this)">Minggu 12: CV & Wawancara</button>
+    <button class="btn" onclick="toggleAll()">Buka / Tutup Semua</button>
+  </div>
+
+  <!-- MINGGU 9 -->
+  <div class="week-section" data-week="w9">
+    <div class="week-title">MINGGU 09: Pengintaian Jaringan & Eksploitasi IoT dengan Kali Linux (Hari 61 – 64)</div>
+
+    <div class="day-card" data-day="61">
+      <div class="day-header" onclick="toggleCard(this)">
+        <div>
+          <span class="day-tag">HARI 61 // BLOK 1-3 (6 JAM)</span>
+          <div class="day-title">Penyadapan Trafik MQTT (Sniffing) & Manipulasi Data (Spoofing)</div>
+        </div>
+        <div class="day-actions">
+          <label class="check-label" onclick="event.stopPropagation()">
+            <input type="checkbox" onchange="saveProgress('d61', this.checked)"> SELESAI
+          </label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <h4>BLOK 1 (2 Jam) — Pemindaian Port Layanan IoT dengan Nmap</h4>
+          <p>Dari terminal Kali Linux (pastikan satu jaringan Bridge/Host-Only dengan Server Ubuntu Fase 02), pindai port terbuka pada IP server target:</p>
+          <div class="code-wrap"><button class="copy-btn" onclick="copyCode(this)">COPY</button><pre>nmap -sV -sC -p 22,1883,3000,8086,8883 192.168.1.100</pre></div>
+        </div>
+        <div class="block-box">
+          <h4>BLOK 2 (2 Jam) — Menyadap Username, Password & Data Sensor</h4>
+          <p>Tangkap paket jaringan pada port 1883 menggunakan <code>tshark</code> atau Wireshark untuk membuktikan komunikasi MQTT tanpa enkripsi bisa dibaca:</p>
+          <div class="code-wrap"><button class="copy-btn" onclick="copyCode(this)">COPY</button><pre>sudo tshark -i eth0 -f "tcp port 1883" -Y "mqtt" -V | grep -E "Topic|Message|User Name|Password"</pre></div>
+        </div>
+        <div class="block-box">
+          <h4>BLOK 3 (2 Jam) — Injeksi Data Palsu (MQTT Spoofing)</h4>
+          <p>Gunakan kredensial yang tertangkap untuk mengirim nilai tagihan/daya palsu ke topik Smart Meter:</p>
+          <div class="code-wrap"><button class="copy-btn" onclick="copyCode(this)">COPY</button><pre>mosquitto_pub -h 192.168.1.100 -p 1883 -u "meter_user" -P "rahasia123"   -t "pln/smartmeter/MTR01" -m '{"voltage": 220, "current": 0.01, "watt": 2.2, "status": "SPOOFED"}'</pre></div>
+        </div>
+        <div class="goal-box"><strong>VERIFIKASI LULUS:</strong> Berhasil menangkap kredensial *cleartext* di Kali Linux dan memanipulasi angka grafik di dashboard Grafana.</div>
+      </div>
+    </div>
+
+    <div class="day-card" data-day="62">
+      <div class="day-header" onclick="toggleCard(this)">
+        <div>
+          <span class="day-tag">HARI 62 // BLOK 1-3 (6 JAM)</span>
+          <div class="day-title">Pengujian Kekuatan Autentikasi (Brute Force) dengan Hydra</div>
+        </div>
+        <div class="day-actions">
+          <label class="check-label" onclick="event.stopPropagation()">
+            <input type="checkbox" onchange="saveProgress('d62', this.checked)"> SELESAI
+          </label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <h4>BLOK 1-3 (6 Jam) — Simulasi Audit Password Lemah pada SSH & MQTT</h4>
+          <p>Siapkan daftar kata sandi uji coba (wordlist) dan jalankan audit menggunakan Hydra di Kali Linux terhadap server lab milikmu sendiri:</p>
+          <div class="code-wrap"><button class="copy-btn" onclick="copyCode(this)">COPY</button><pre>mkdir -p ~/iot-audit && cd ~/iot-audit
+printf "123456
+admin
+password
+rahasia123
+pln2026
+" > wordlist.txt
+
+# Uji SSH
+hydra -l teknisi -P wordlist.txt ssh://192.168.1.100 -t 4
+
+# Uji MQTT Broker
+hydra -l meter_user -P wordlist.txt 192.168.1.100 mqtt</pre></div>
+        </div>
+        <div class="goal-box"><strong>VERIFIKASI LULUS:</strong> Hydra berhasil menemukan password yang lemah serta kamu mencatat log percobaan login gagal di <code>/var/log/auth.log</code> server target.</div>
+      </div>
+    </div>
+
+    <div class="day-card" data-day="63">
+      <div class="day-header" onclick="toggleCard(this)">
+        <div>
+          <span class="day-tag">HARI 63 // BLOK 1-3 (6 JAM)</span>
+          <div class="day-title">Keamanan Nirkabel IoT: Pemindaian Wi-Fi & Bluetooth Low Energy (BLE)</div>
+        </div>
+        <div class="day-actions">
+          <label class="check-label" onclick="event.stopPropagation()">
+            <input type="checkbox" onchange="saveProgress('d63', this.checked)"> SELESAI
+          </label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <h4>BLOK 1-3 (6 Jam) — Eksplorasi Perangkat BLE & Jaringan Nirkabel</h4>
+          <p>Pelajari cara mendeteksi perangkat IoT berbasis Bluetooth Low Energy di sekitar menggunakan utilitas Linux:</p>
+          <div class="code-wrap"><button class="copy-btn" onclick="copyCode(this)">COPY</button><pre># Cek adaptor Bluetooth & pindai perangkat BLE
+hciconfig
+sudo timeout 15s hcitool lescan
+
+# Atau gunakan bluetoothctl interaktif
+bluetoothctl
+# Di dalam prompt bluetoothctl:
+# scan on
+# devices
+# info [MAC_ADDRESS]</pre></div>
+          <p>Pelajari juga konsep *monitor mode* Wi-Fi (<code>airmon-ng</code>) dan identifikasi enkripsi lemah (WEP/WPA2-PSK) pada *gateway* IoT.</p>
+        </div>
+        <div class="goal-box"><strong>VERIFIKASI LULUS:</strong> Memahami pemetaan karakteristik GATT pada BLE serta mengetahui perbedaan keamanan WPA2 vs WPA3 untuk jaringan IoT.</div>
+      </div>
+    </div>
+
+    <div class="rest-card"><strong>HARI 64 — ISTIRAHAT TOTAL:</strong> Lepas dari terminal selama 24 jam penuh untuk pemulihan fokus.</div>
+  </div>
+
+  <!-- MINGGU 10 -->
+  <div class="week-section" data-week="w10">
+    <div class="week-title">MINGGU 10: Analisis Firmware & Pengerasan Sistem (Hardening) (Hari 65 – 71)</div>
+
+    <div class="day-card" data-day="65-67">
+      <div class="day-header" onclick="toggleCard(this)">
+        <div>
+          <span class="day-tag">HARI 65 – 67 // 3 HARI (18 JAM)</span>
+          <div class="day-title">Ekstraksi & Audit Keamanan Firmware IoT dengan Binwalk</div>
+        </div>
+        <div class="day-actions">
+          <label class="check-label" onclick="event.stopPropagation()">
+            <input type="checkbox" onchange="saveProgress('d65', this.checked)"> SELESAI
+          </label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <h4>Hari 65-66 — Membongkar File Binary Firmware</h4>
+          <p>Unduh sampel firmware open-source (misal image router OpenWrt atau sampel latihan DVRF) di Kali Linux, lalu ekstrak sistem file SquashFS di dalamnya:</p>
+          <div class="code-wrap"><button class="copy-btn" onclick="copyCode(this)">COPY</button><pre>sudo apt update && sudo apt install -y binwalk squashfs-tools
+mkdir -p ~/firmware-lab && cd ~/firmware-lab
+
+# Analisis struktur firmware & ekstrak isinya
+binwalk firmware_sample.bin
+binwalk -e firmware_sample.bin</pre></div>
+        </div>
+        <div class="block-box">
+          <h4>Hari 67 — Mencari Kredensial Hardcoded & Kunci Privat</h4>
+          <p>Masuk ke folder hasil ekstraksi (<code>_firmware_sample.bin.extracted/squashfs-root</code>) dan cari potensi kebocoran rahasia:</p>
+          <div class="code-wrap"><button class="copy-btn" onclick="copyCode(this)">COPY</button><pre>cd _*.extracted/squashfs-root
+cat etc/passwd
+cat etc/shadow
+grep -rnw . -e "password" -e "api_key" -e "BEGIN RSA PRIVATE KEY" 2>/dev/null | head -n 30</pre></div>
+        </div>
+        <div class="goal-box"><strong>VERIFIKASI LULUS:</strong> Berhasil mengekstrak struktur root filesystem dari file <code>.bin</code> dan menemukan file konfigurasi sensitif di dalamnya.</div>
+      </div>
+    </div>
+
+    <div class="day-card" data-day="68-69">
+      <div class="day-header" onclick="toggleCard(this)">
+        <div>
+          <span class="day-tag">HARI 68 – 69 // 2 HARI (12 JAM)</span>
+          <div class="day-title">Mengamankan Komunikasi IoT dengan MQTTS (TLS/SSL Port 8883)</div>
+        </div>
+        <div class="day-actions">
+          <label class="check-label" onclick="event.stopPropagation()">
+            <input type="checkbox" onchange="saveProgress('d68', this.checked)"> SELESAI
+          </label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <h4>Hari 68 — Membuat Sertifikat CA & Server SSL dengan OpenSSL</h4>
+          <p>Di Server Ubuntu, buat sertifikat TLS agar seluruh data Smart Meter terenkripsi penuh:</p>
+          <div class="code-wrap"><button class="copy-btn" onclick="copyCode(this)">COPY</button><pre>mkdir -p ~/iot-certs && cd ~/iot-certs
+# 1. Buat Certificate Authority (CA)
+openssl genrsa -out ca.key 2048
+openssl req -new -x509 -days 365 -key ca.key -out ca.crt -subj "/CN=SmartGrid-CA"
+
+# 2. Buat Kunci & Sertifikat Server MQTT
+openssl genrsa -out server.key 2048
+openssl req -new -key server.key -out server.csr -subj "/CN=192.168.1.100"
+openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365</pre></div>
+          <p>Tambahkan konfigurasi listener terenkripsi ke <code>mosquitto.conf</code> dan tutup port 1883 dari akses luar:</p>
+          <div class="code-wrap"><button class="copy-btn" onclick="copyCode(this)">COPY</button><pre>listener 8883
+cafile /mosquitto/certs/ca.crt
+certfile /mosquitto/certs/server.crt
+keyfile /mosquitto/certs/server.key
+allow_anonymous false</pre></div>
+        </div>
+        <div class="block-box">
+          <h4>Hari 69 — Verifikasi Enkripsi Menggunakan Wireshark</h4>
+          <p>Kirim pesan uji memakai <code>--cafile ca.crt</code> di port 8883, lalu tangkap ulang trafiknya dari Kali Linux:</p>
+          <div class="code-wrap"><button class="copy-btn" onclick="copyCode(this)">COPY</button><pre>mosquitto_pub -h 192.168.1.100 -p 8883 --cafile ca.crt   -u "meter_user" -P "StrongPass#2026" -t "pln/smartmeter/MTR01" -m '{"watt": 450}'</pre></div>
+        </div>
+        <div class="goal-box"><strong>VERIFIKASI LULUS:</strong> Di Wireshark Kali Linux, paket kini tampil sebagai protokol <strong>TLSv1.3 Application Data</strong> terenkripsi dan tidak ada lagi password maupun JSON yang terbaca.</div>
+      </div>
+    </div>
+
+    <div class="day-card" data-day="70">
+      <div class="day-header" onclick="toggleCard(this)">
+        <div>
+          <span class="day-tag">HARI 70 // BLOK 1-3 (6 JAM)</span>
+          <div class="day-title">Proteksi Blokir Otomatis Serangan Brute Force dengan Fail2Ban</div>
+        </div>
+        <div class="day-actions">
+          <label class="check-label" onclick="event.stopPropagation()">
+            <input type="checkbox" onchange="saveProgress('d70', this.checked)"> SELESAI
+          </label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <h4>BLOK 1-3 (6 Jam) — Instalasi & Konfigurasi Jail Fail2Ban</h4>
+          <p>Pasang Fail2Ban di Ubuntu Server agar IP penyerang otomatis diblokir setelah 3 kali gagal login:</p>
+          <div class="code-wrap"><button class="copy-btn" onclick="copyCode(this)">COPY</button><pre>sudo apt update && sudo apt install -y fail2ban
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+
+# Aktifkan & cek status pemblokiran
+sudo systemctl enable --now fail2ban
+sudo fail2ban-client status sshd</pre></div>
+          <p>Uji coba dengan melakukan serangan Hydra ulang dari Kali Linux dan pastikan IP Kali otomatis masuk daftar <em>Banned IP list</em>.</p>
+        </div>
+        <div class="goal-box"><strong>VERIFIKASI LULUS:</strong> IP Kali Linux terblokir otomatis oleh firewall server dalam hitungan detik saat menjalankan serangan brute force.</div>
+      </div>
+    </div>
+
+    <div class="rest-card"><strong>HARI 71 — ISTIRAHAT TOTAL:</strong> Pemulihan energi sebelum masuk ke pengerjaan Proyek Akhir (Capstone).</div>
+  </div>
+
+  <!-- MINGGU 11 -->
+  <div class="week-section" data-week="w11">
+    <div class="week-title">MINGGU 11: Capstone Project & Pembangunan Portofolio Profesional (Hari 72 – 78)</div>
+
+    <div class="day-card" data-day="72-75">
+      <div class="day-header" onclick="toggleCard(this)">
+        <div>
+          <span class="day-tag">HARI 72 – 75 // 4 HARI (24 JAM)</span>
+          <div class="day-title">Capstone Project: Arsitektur Secure Smart Grid & Laporan Audit PDF</div>
+        </div>
+        <div class="day-actions">
+          <label class="check-label" onclick="event.stopPropagation()">
+            <input type="checkbox" onchange="saveProgress('d72', this.checked)"> SELESAI
+          </label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <h4>Target Deliverable Proyek Akhir</h4>
+          <ul>
+            <li><strong>Infrastruktur Lengkap:</strong> Ubuntu Server (UFW aktif, SSH Key-Only, Fail2Ban) + Docker Compose (Mosquitto MQTTS TLS 8883 + InfluxDB + Grafana + Node-RED Telegram Alert).</li>
+            <li><strong>Skrip Otomasi:</strong> Simulator 20 Smart Meter terenkripsi + skrip backup database harian via <code>cron</code>.</li>
+            <li><strong>Laporan Audit Keamanan (Vulnerability Assessment Report):</strong> Dokumen 3–5 halaman berisi bukti tangkapan layar celah sebelum diperbaiki (Nmap, Wireshark cleartext) vs setelah diperbaiki (TLS 8883 & Fail2Ban).</li>
+          </ul>
+        </div>
+        <div class="goal-box"><strong>VERIFIKASI LULUS:</strong> Seluruh sistem berjalan stabil 24 jam tanpa error dan dokumen laporan audit siap dilampirkan saat melamar kerja.</div>
+      </div>
+    </div>
+
+    <div class="day-card" data-day="76-77">
+      <div class="day-header" onclick="toggleCard(this)">
+        <div>
+          <span class="day-tag">HARI 76 – 77 // 2 HARI (12 JAM)</span>
+          <div class="day-title">Kurasi Portofolio GitHub & Optimasi Profil LinkedIn</div>
+        </div>
+        <div class="day-actions">
+          <label class="check-label" onclick="event.stopPropagation()">
+            <input type="checkbox" onchange="saveProgress('d76', this.checked)"> SELESAI
+          </label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <h4>Hari 76 — Merapikan 3 Repositori Utama di GitHub</h4>
+          <p>Pastikan akun GitHub memiliki 3 repositori publik dengan file <code>README.md</code> berisi diagram arsitektur, cara instalasi, dan screenshot hasil:</p>
+          <ul>
+            <li><code>linux-server-hardening-scripts</code> (Skrip Bash monitoring, backup, dan konfigurasi keamanan Fase 01).</li>
+            <li><code>iot-smartmeter-mqtt-grafana</code> (Stack Docker Compose, simulator Python, dan dashboard Fase 02).</li>
+            <li><code>iot-security-audit-lab</code> (Metodologi pengujian MQTTS, mitigasi Fail2Ban, dan ringkasan laporan audit Fase 03).</li>
+          </ul>
+        </div>
+        <div class="block-box">
+          <h4>Hari 77 — Optimasi Kata Kunci LinkedIn</h4>
+          <p>Perbarui Headline & bagian <em>Skills</em> LinkedIn dengan kata kunci pencari bakat: <code>Linux System Administration | IoT Infrastructure | MQTT / MQTTS | Docker | Network Security | Bash & Python Scripting</code>.</p>
+        </div>
+        <div class="goal-box"><strong>VERIFIKASI LULUS:</strong> Profil GitHub dan LinkedIn tampil profesional, terverifikasi tautan proyeknya, dan mudah ditemukan perekrut.</div>
+      </div>
+    </div>
+
+    <div class="rest-card"><strong>HARI 78 — ISTIRAHAT TOTAL:</strong> Siapkan mental untuk minggu terakhir persiapan karier & wawancara.</div>
+  </div>
+
+  <!-- MINGGU 12 -->
+  <div class="week-section" data-week="w12">
+    <div class="week-title">MINGGU 12: Penyusunan CV ATS, Simulasi Wawancara & Eksekusi Lamaran (Hari 79 – 90)</div>
+
+    <div class="day-card" data-day="79-80">
+      <div class="day-header" onclick="toggleCard(this)">
+        <div>
+          <span class="day-tag">HARI 79 – 80 // 2 HARI (12 JAM)</span>
+          <div class="day-title">Menyusun CV Format ATS Berbasis Proyek Teknis</div>
+        </div>
+        <div class="day-actions">
+          <label class="check-label" onclick="event.stopPropagation()">
+            <input type="checkbox" onchange="saveProgress('d79', this.checked)"> SELESAI
+          </label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <h4>Struktur CV Efektif untuk Transisi Karier Usia 30 Tahun</h4>
+          <ul>
+            <li><strong>Header:</strong> Nama Lengkap, Nomor WA aktif, Email profesional, Link LinkedIn, dan Link GitHub.</li>
+            <li><strong>Ringkasan Profesional (3 Baris):</strong> Tekankan kedisiplinan kerja, kemampuan pemecahan masalah lapangan, serta penguasaan praktik administrasi Linux Server, infrastruktur IoT (MQTT/Docker), dan keamanan jaringan.</li>
+            <li><strong>Proyek Teknis Utama (Taruh di Atas Pengalaman Lama):</strong> Tuliskan 3 proyek Capstone lengkap dengan angka terukur (misal: <em>"Membangun arsitektur backend IoT berbasis Docker yang memproses simulasi 100 sensor Smart Meter dengan enkripsi TLS 8883"</em>).</li>
+          </ul>
+        </div>
+        <div class="goal-box"><strong>VERIFIKASI LULUS:</strong> CV selesai dalam format PDF bersih 1–2 halaman tanpa tabel rumit agar mudah dibaca sistem ATS HRD.</div>
+      </div>
+    </div>
+
+    <div class="day-card" data-day="81-84">
+      <div class="day-header" onclick="toggleCard(this)">
+        <div>
+          <span class="day-tag">HARI 81 – 84 // 4 HARI (24 JAM)</span>
+          <div class="day-title">Latihan Wawancara Teknis & Ujian Live Troubleshooting 60 Menit</div>
+        </div>
+        <div class="day-actions">
+          <label class="check-label" onclick="event.stopPropagation()">
+            <input type="checkbox" onchange="saveProgress('d81', this.checked)"> SELESAI
+          </label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <h4>Hari 81-83 — Latihan Pertanyaan Wawancara Teknis Wajib</h4>
+          <ul>
+            <li><strong>Disk Penuh padahal <code>df -h</code> masih ada sisa?</strong> Jelaskan konsep <em>Inodes penuh</em> (cek dengan <code>df -i</code>) atau file terhapus yang masih dikunci proses berjalan (<code>lsof +L1</code>).</li>
+            <li><strong>Perbedaan TCP vs UDP pada IoT?</strong> TCP menjamin pengiriman paket berurutan (dipakai MQTT/HTTPS), sedangkan UDP lebih ringan tanpa *handshake* (dipakai DNS/CoAP).</li>
+            <li><strong>Cara mengamankan server Linux baru?</strong> Update sistem, buat user non-root dengan sudo, matikan login password SSH (pakai SSH Key), aktifkan firewall UFW, dan pasang Fail2Ban.</li>
+          </ul>
+        </div>
+        <div class="block-box">
+          <h4>Hari 84 — Simulasi Ujian Praktik Darurat (60 Menit)</h4>
+          <p>Ubah port SSH, hentikan salah satu kontainer Docker, dan buat aturan firewall yang memblokir koneksi lokal—lalu latih dirimu mendiagnosis menggunakan <code>ss -tulpn</code>, <code>journalctl -xe</code>, <code>docker logs</code>, dan <code>ufw status</code> hingga pulih di bawah 30 menit.</p>
+        </div>
+        <div class="goal-box"><strong>VERIFIKASI LULUS:</strong> Mampu menjelaskan konsep teknis dengan bahasa lugas dan menyelesaikan skenario kerusakan server secara sistematis.</div>
+      </div>
+    </div>
+
+    <div class="rest-card"><strong>HARI 85 — ISTIRAHAT TOTAL:</strong> Persiapan akhir sebelum gelombang pengiriman lamaran kerja.</div>
+
+    <div class="day-card" data-day="86-90">
+      <div class="day-header" onclick="toggleCard(this)">
+        <div>
+          <span class="day-tag">HARI 86 – 90 // 5 HARI EKSEKUSI KARIER</span>
+          <div class="day-title">Eksekusi Lamaran Kerja Terstruktur & Pemeliharaan Skill</div>
+        </div>
+        <div class="day-actions">
+          <label class="check-label" onclick="event.stopPropagation()">
+            <input type="checkbox" onchange="saveProgress('d86', this.checked)"> SELESAI
+          </label>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="block-box">
+          <h4>Target Posisi & Strategi Harian (Hari 86-90)</h4>
+          <ul>
+            <li><strong>Kata Kunci Lowongan:</strong> <em>Junior Linux System Administrator, NOC Engineer, IoT Technical Support, Field IoT Engineer, Infrastructure Support, Junior SOC Analyst</em>.</li>
+            <li><strong>Ritme Harian:</strong> 3 jam pagi mengirim 5–8 lamaran berkualitas yang disesuaikan dengan deskripsi pekerjaan (sertakan tautan GitHub & laporan audit) + 3 jam sore mengulang praktik lab agar otot teknis tetap tajam saat dipanggil tes teknis.</li>
+          </ul>
+        </div>
+        <div class="goal-box"><strong>MISI 90 HARI SELESAI:</strong> Kamu telah menyelesaikan 540 jam kurikulum praktik Linux, IoT, dan Cybersecurity dengan portofolio nyata yang siap dipertanggungjawabkan di depan pewawancara teknis!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// 3D Cyberpunk Background Engine
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let w, h, mouseX = 0, mouseY = 0;
+
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+window.addEventListener('mousemove', e => {
+  mouseX = (e.clientX / w - 0.5) * 2;
+  mouseY = (e.clientY / h - 0.5) * 2;
+});
+
+const nodes = Array.from({ length: 45 }, () => ({
+  x: (Math.random() - 0.5) * 1600,
+  y: (Math.random() - 0.5) * 900,
+  z: Math.random() * 1000 + 100,
+  color: Math.random() > 0.5 ? '#00f3ff' : '#ff007f'
+}));
+
+let gridOffset = 0;
+function draw3D() {
+  ctx.fillStyle = '#06080f';
+  ctx.fillRect(0, 0, w, h);
+
+  const horizon = h * 0.48 + mouseY * 25;
+  const centerX = w * 0.5 + mouseX * 35;
+
+  // 3D Perspective Grid Floor
+  ctx.strokeStyle = 'rgba(255, 0, 127, 0.22)';
+  ctx.lineWidth = 1;
+  for (let i = -14; i <= 14; i++) {
+    ctx.beginPath();
+    ctx.moveTo(centerX + i * 35, horizon);
+    ctx.lineTo(centerX + i * 240, h);
+    ctx.stroke();
+  }
+
+  gridOffset = (gridOffset + 1.4) % 40;
+  for (let z = 1; z < 18; z++) {
+    const progress = (z * 40 + gridOffset) / 720;
+    const y = horizon + Math.pow(progress, 2.1) * (h - horizon);
+    ctx.strokeStyle = `rgba(0, 243, 255, ${progress * 0.32})`;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
+  }
+
+  // Floating 3D Data Nodes
+  nodes.forEach(n => {
+    n.z -= 2.2;
+    if (n.z <= 20) n.z = 1000;
+    const scale = 320 / n.z;
+    const sx = centerX + n.x * scale;
+    const sy = horizon + n.y * scale;
+    const size = Math.max(1.2, 4 * scale);
+
+    ctx.fillStyle = n.color;
+    ctx.globalAlpha = Math.min(0.85, (1000 - n.z) / 800);
+    ctx.fillRect(sx - size / 2, sy - size / 2, size, size);
+  });
+  ctx.globalAlpha = 1;
+
+  requestAnimationFrame(draw3D);
+}
+draw3D();
+
+// Interactive Accordion & Progress Tracking
+function toggleCard(header) {
+  header.parentElement.classList.toggle('open');
+}
+
+let allOpen = false;
+function toggleAll() {
+  allOpen = !allOpen;
+  document.querySelectorAll('.day-card').forEach(c => {
+    c.classList.toggle('open', allOpen);
+  });
+}
+
+function filterWeek(week, btn) {
+  document.querySelectorAll('.controls .btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.week-section').forEach(sec => {
+    sec.style.display = (week === 'all' || sec.dataset.week === week) ? 'block' : 'none';
+  });
+}
+
+function copyCode(btn) {
+  const code = btn.nextElementSibling.innerText;
+  navigator.clipboard.writeText(code);
+  const old = btn.innerText;
+  btn.innerText = 'COPIED!';
+  setTimeout(() => btn.innerText = old, 1400);
+}
+
+const STORAGE_KEY = 'cyberpunk_iot_progress_v1';
+function getProgress() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { return {}; }
+}
+
+function saveProgress(id, checked) {
+  const data = getProgress();
+  data[id] = checked;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  updateUI();
+}
+
+function updateUI() {
+  const data = getProgress();
+  const keys = ['d61','d62','d63','d65','d68','d70','d72','d76','d79','d81','d86'];
+  let doneCount = 0;
+  document.querySelectorAll('.day-card').forEach(card => {
+    const cb = card.querySelector('input[type="checkbox"]');
+    if (!cb) return;
+    const match = cb.getAttribute('onchange').match(/'(d\d+)'/);
+    if (match) {
+      const k = match[1];
+      const isDone = !!data[k];
+      cb.checked = isDone;
+      card.classList.toggle('done', isDone);
+      if (isDone) doneCount++;
+    }
+  });
+  document.getElementById('phase-progress').innerText = `PROGRES FASE 03: ${doneCount} / ${keys.length} MODUL`;
+}
+
+updateUI();
+</script>
+</body>
+</html>
