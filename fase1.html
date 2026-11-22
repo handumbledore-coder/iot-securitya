@@ -3,25 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FASE 01 // Linux Server & Networking Lab Manual (Hari 01-30)</title>
+<title>FASE 01 // LINUX SERVER & NETWORKING LAB MANUAL (HARI 01-30)</title>
 <style>
   :root {
-    --bg: #04060d;
-    --card: rgba(10, 15, 29, 0.88);
-    --card-border: rgba(0, 243, 255, 0.25);
+    --bg-dark: #05070e;
+    --panel-bg: rgba(10, 15, 29, 0.88);
     --cyan: #00f3ff;
     --magenta: #ff007f;
     --yellow: #fcee0a;
-    --green: #00ff88;
-    --text: #e2e8f0;
-    --muted: #94a3b8;
-    --code-bg: #020408;
+    --green: #00ff9d;
+    --text-main: #e2e8f0;
+    --text-dim: #94a3b8;
+    --border-glow: rgba(0, 243, 255, 0.35);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background-color: var(--bg);
-    color: var(--text);
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.65;
     overflow-x: hidden;
   }
@@ -34,272 +33,240 @@
   }
   .vignette {
     position: fixed;
-    inset: 0;
-    background: radial-gradient(circle at center, transparent 35%, rgba(2, 4, 10, 0.9) 100%);
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: radial-gradient(circle at center, transparent 35%, rgba(3, 5, 12, 0.92) 100%);
     z-index: -1;
     pointer-events: none;
   }
-  .navbar {
+  nav {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(4, 6, 13, 0.92);
+    background: rgba(5, 8, 18, 0.94);
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--card-border);
-    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--border-glow);
+    padding: 12px 20px;
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
+    align-items: center;
+    gap: 10px;
   }
-  .nav-links { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 8px; }
   .nav-btn {
     text-decoration: none;
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    padding: 6px 12px;
+    border-radius: 4px;
     font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.05em;
-    padding: 0.4rem 0.75rem;
-    border-radius: 4px;
-    border: 1px solid rgba(255,255,255,0.15);
-    color: var(--text);
-    background: rgba(15, 23, 42, 0.8);
-    transition: all 0.2s;
+    letter-spacing: 0.5px;
+    transition: 0.2s;
   }
-  .nav-btn:hover { border-color: var(--cyan); color: var(--cyan); }
-  .nav-btn.active {
-    background: rgba(0, 243, 255, 0.15);
-    border-color: var(--cyan);
-    color: var(--cyan);
-    box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
+  .nav-btn:hover, .nav-btn.active {
+    background: var(--cyan);
+    color: #020617;
+    box-shadow: 0 0 12px rgba(0, 243, 255, 0.6);
   }
   .progress-pill {
     font-family: monospace;
     font-size: 0.8rem;
-    font-weight: bold;
     color: var(--yellow);
-    background: rgba(252, 238, 10, 0.1);
-    border: 1px solid rgba(252, 238, 10, 0.4);
-    padding: 0.35rem 0.75rem;
-    border-radius: 4px;
+    border: 1px solid rgba(252, 238, 10, 0.5);
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: rgba(252, 238, 10, 0.08);
   }
   .container {
-    max-width: 1000px;
+    max-width: 1050px;
     margin: 0 auto;
-    padding: 1.5rem 1rem 4rem;
+    padding: 25px 16px 80px;
   }
-  .hero {
-    background: var(--card);
-    backdrop-filter: blur(14px);
-    border: 1px solid var(--card-border);
+  header.hero {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-glow);
     border-left: 4px solid var(--cyan);
     border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    padding: 24px;
+    margin-bottom: 22px;
+    backdrop-filter: blur(12px);
     box-shadow: 0 10px 30px rgba(0,0,0,0.6);
   }
-  .badge {
-    display: inline-block;
+  .tag-phase {
     font-family: monospace;
-    font-size: 0.75rem;
-    font-weight: 700;
     color: var(--cyan);
-    letter-spacing: 0.1em;
-    margin-bottom: 0.5rem;
+    font-size: 0.82rem;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
+    margin-bottom: 6px;
   }
   h1 {
-    font-size: clamp(1.4rem, 3vw, 2.1rem);
+    font-size: 1.7rem;
     color: #fff;
-    margin-bottom: 0.6rem;
-    letter-spacing: 0.02em;
+    margin-bottom: 10px;
+    text-shadow: 0 0 12px rgba(0, 243, 255, 0.35);
   }
-  .hero p { color: var(--muted); font-size: 0.92rem; }
+  .hero p { color: var(--text-dim); font-size: 0.94rem; }
   .controls {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    justify-content: space-between;
     align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
   }
+  .filter-group { display: flex; flex-wrap: wrap; gap: 8px; }
   .filter-btn {
-    background: rgba(15, 23, 42, 0.85);
-    color: var(--text);
-    border: 1px solid rgba(255,255,255,0.15);
-    padding: 0.45rem 0.85rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
+    background: rgba(15, 23, 42, 0.9);
+    color: var(--text-main);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    padding: 7px 14px;
+    border-radius: 5px;
     cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
     transition: 0.2s;
   }
   .filter-btn.active, .filter-btn:hover {
     background: var(--cyan);
-    color: #02040a;
+    color: #020617;
     border-color: var(--cyan);
   }
   .toggle-all-btn {
-    margin-left: auto;
     background: rgba(255, 0, 127, 0.15);
     color: var(--magenta);
     border: 1px solid var(--magenta);
-    padding: 0.45rem 0.85rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 5px;
     cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
   }
-  .week-header {
-    font-family: monospace;
-    font-size: 1.05rem;
-    color: var(--yellow);
-    border-bottom: 1px solid rgba(252, 238, 10, 0.3);
-    padding-bottom: 0.4rem;
-    margin: 2rem 0 1rem;
-    letter-spacing: 0.05em;
-  }
+  .toggle-all-btn:hover { background: var(--magenta); color: #fff; }
   .day-card {
-    background: var(--card);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--card-border);
+    background: var(--panel-bg);
+    border: 1px solid rgba(0, 243, 255, 0.22);
     border-radius: 8px;
-    margin-bottom: 1rem;
+    margin-bottom: 16px;
     overflow: hidden;
+    backdrop-filter: blur(12px);
     transition: border-color 0.2s;
   }
-  .day-card.completed {
-    border-color: rgba(0, 255, 136, 0.5);
-  }
+  .day-card.completed { border-color: var(--green); }
   .day-header {
-    padding: 1rem 1.25rem;
+    padding: 16px 20px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    align-items: center;
     cursor: pointer;
-    user-select: none;
-    background: rgba(255,255,255,0.02);
+    background: rgba(15, 23, 42, 0.65);
+    gap: 12px;
   }
-  .day-header:hover { background: rgba(0, 243, 255, 0.05); }
-  .day-title-wrap { display: flex; align-items: center; gap: 0.8rem; flex: 1; }
-  .day-tag {
+  .day-header:hover { background: rgba(0, 243, 255, 0.08); }
+  .day-meta { display: flex; flex-direction: column; gap: 4px; }
+  .day-badge {
     font-family: monospace;
-    font-size: 0.78rem;
-    font-weight: 800;
-    background: rgba(0, 243, 255, 0.15);
+    font-size: 0.76rem;
     color: var(--cyan);
-    border: 1px solid var(--cyan);
-    padding: 0.25rem 0.55rem;
-    border-radius: 4px;
-    white-space: nowrap;
+    font-weight: 700;
   }
-  .day-card.completed .day-tag {
-    background: rgba(0, 255, 136, 0.15);
-    color: var(--green);
-    border-color: var(--green);
-  }
-  .day-title { font-weight: 700; font-size: 1rem; color: #fff; }
-  .day-actions { display: flex; align-items: center; gap: 0.75rem; }
+  .day-title { font-size: 1.08rem; font-weight: 700; color: #f8fafc; }
+  .day-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
   .check-label {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 6px;
     font-family: monospace;
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-size: 0.78rem;
     color: var(--green);
     cursor: pointer;
+    background: rgba(0, 255, 157, 0.08);
+    border: 1px solid rgba(0, 255, 157, 0.35);
+    padding: 5px 10px;
+    border-radius: 4px;
   }
-  .check-label input { width: 16px; height: 16px; accent-color: var(--green); cursor: pointer; }
-  .chevron { color: var(--cyan); font-weight: bold; transition: transform 0.25s; }
-  .day-card.open .chevron { transform: rotate(180deg); }
+  .check-label input { accent-color: var(--green); width: 15px; height: 15px; cursor: pointer; }
+  .chevron { color: var(--cyan); font-weight: bold; font-size: 1.1rem; }
   .day-body {
     display: none;
-    padding: 1.25rem;
-    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 20px;
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
   }
   .day-card.open .day-body { display: block; }
   .block-box {
-    margin-bottom: 1.1rem;
-    padding-left: 0.85rem;
-    border-left: 2px solid rgba(0, 243, 255, 0.4);
+    margin-bottom: 18px;
+    padding-left: 14px;
+    border-left: 2px solid var(--magenta);
   }
   .block-title {
-    font-size: 0.88rem;
     font-weight: 700;
-    color: var(--cyan);
-    margin-bottom: 0.35rem;
+    color: var(--yellow);
+    font-size: 0.95rem;
+    margin-bottom: 8px;
   }
-  .block-desc { font-size: 0.9rem; color: var(--text); margin-bottom: 0.5rem; }
-  .cmd-wrap {
+  .step-list { margin-left: 18px; color: #cbd5e1; font-size: 0.92rem; }
+  .step-list li { margin-bottom: 6px; }
+  .code-wrap {
     position: relative;
-    background: var(--code-bg);
-    border: 1px solid rgba(0, 243, 255, 0.25);
+    background: #02040a;
+    border: 1px solid rgba(0, 243, 255, 0.3);
     border-radius: 6px;
-    margin: 0.5rem 0 0.75rem;
+    margin: 10px 0 14px;
     overflow: hidden;
   }
-  .cmd-top {
+  .code-top {
+    background: rgba(0, 243, 255, 0.1);
+    padding: 5px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(0, 243, 255, 0.08);
-    padding: 0.25rem 0.75rem;
     font-family: monospace;
-    font-size: 0.72rem;
-    color: var(--muted);
+    font-size: 0.75rem;
+    color: var(--cyan);
   }
   .copy-btn {
-    background: rgba(0, 243, 255, 0.2);
-    color: var(--cyan);
-    border: 1px solid var(--cyan);
+    background: var(--cyan);
+    color: #020617;
+    border: none;
+    padding: 3px 10px;
     border-radius: 3px;
-    padding: 0.15rem 0.5rem;
     font-family: monospace;
-    font-size: 0.7rem;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 0.74rem;
     cursor: pointer;
   }
-  .copy-btn:hover { background: var(--cyan); color: #000; }
+  .copy-btn:hover { background: #fff; }
   pre {
-    padding: 0.75rem;
-    font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 0.83rem;
-    color: #38bdf8;
+    padding: 12px 14px;
     overflow-x: auto;
-    white-space: pre;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #38bdf8;
+    line-height: 1.5;
   }
   .goal-box {
-    background: rgba(0, 255, 136, 0.08);
-    border: 1px solid rgba(0, 255, 136, 0.35);
+    background: rgba(0, 255, 157, 0.08);
+    border: 1px solid rgba(0, 255, 157, 0.4);
     border-radius: 6px;
-    padding: 0.75rem 1rem;
-    font-size: 0.88rem;
+    padding: 12px 16px;
+    margin-top: 14px;
+    font-size: 0.9rem;
     color: #d1fae5;
-    margin-top: 0.75rem;
   }
   .goal-box strong { color: var(--green); }
   .bottom-nav {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
-    margin-top: 2rem;
-    flex-wrap: wrap;
+    margin-top: 30px;
+    gap: 12px;
   }
-  .bottom-btn {
-    text-decoration: none;
-    padding: 0.75rem 1.25rem;
-    border-radius: 6px;
-    font-weight: 700;
-    font-size: 0.88rem;
-    border: 1px solid var(--cyan);
-    color: var(--cyan);
-    background: rgba(0, 243, 255, 0.1);
-  }
-  .bottom-btn.next {
-    border-color: var(--magenta);
-    color: var(--magenta);
-    background: rgba(255, 0, 127, 0.12);
+  @media (max-width: 600px) {
+    h1 { font-size: 1.35rem; }
+    .day-header { flex-direction: column; align-items: flex-start; }
+    .day-actions { width: 100%; justify-content: space-between; }
   }
 </style>
 </head>
@@ -307,492 +274,546 @@
 <canvas id="bg-canvas"></canvas>
 <div class="vignette"></div>
 
-<nav class="navbar">
+<nav>
   <div class="nav-links">
     <a href="index.html" class="nav-btn">PORTAL UTAMA</a>
     <a href="fase1.html" class="nav-btn active">FASE 01 (H1-30)</a>
     <a href="fase2.html" class="nav-btn">FASE 02 (H31-60)</a>
     <a href="fase3.html" class="nav-btn">FASE 03 (H61-90)</a>
   </div>
-  <div class="progress-pill" id="progress-display">PROGRES FASE 01: 0 / 30 HARI</div>
+  <div class="progress-pill" id="progress-counter">PROGRES FASE 01: 0 / 30 HARI</div>
 </nav>
 
 <div class="container">
-  <div class="hero">
-    <div class="badge">FASE 01 // FONDASI SISTEM & JARINGAN (180 JAM PRAKTIK)</div>
+  <header class="hero">
+    <div class="tag-phase">FASE 01 // VIRTUALBOX & UBUNTU SERVER LAB (180 JAM PRAKTIK)</div>
     <h1>Linux Server Administration & Networking Lab Manual</h1>
-    <p>Panduan praktikum harian step-by-step untuk menguasai terminal Linux tanpa GUI, manajemen penyimpanan, layanan systemd, Bash scripting, firewall, database, hingga kontainer Docker. Pola harian: 6 jam dibagi menjadi 3 blok waktu (20% teori, 80% praktik langsung).</p>
-  </div>
+    <p>Panduan praktikum harian step-by-step berbasis <strong>Oracle VirtualBox & Ubuntu Server 24.04 LTS</strong> untuk menguasai administrasi sistem Linux tanpa GUI, manajemen partisi, layanan systemd, Bash scripting, firewall UFW, database, hingga kontainer Docker. Pola harian: 6 jam dibagi 3 blok (20% teori, 80% praktik langsung).</p>
+  </header>
 
   <div class="controls">
-    <button class="filter-btn active" onclick="filterWeek('all', this)">Semua (H1-30)</button>
-    <button class="filter-btn" onclick="filterWeek('w1', this)">Minggu 1 (H1-7)</button>
-    <button class="filter-btn" onclick="filterWeek('w2', this)">Minggu 2 (H8-14)</button>
-    <button class="filter-btn" onclick="filterWeek('w3', this)">Minggu 3 (H15-21)</button>
-    <button class="filter-btn" onclick="filterWeek('w4', this)">Minggu 4 (H22-30)</button>
-    <button class="toggle-all-btn" onclick="toggleAllCards()">Buka / Tutup Semua Modul</button>
+    <div class="filter-group">
+      <button class="filter-btn active" onclick="filterWeek('all', this)">Semua (H1-30)</button>
+      <button class="filter-btn" onclick="filterWeek('w1', this)">Minggu 1 (H1-7)</button>
+      <button class="filter-btn" onclick="filterWeek('w2', this)">Minggu 2 (H8-14)</button>
+      <button class="filter-btn" onclick="filterWeek('w3', this)">Minggu 3 (H15-21)</button>
+      <button class="filter-btn" onclick="filterWeek('w4', this)">Minggu 4 (H22-30)</button>
+    </div>
+    <button class="toggle-all-btn" onclick="toggleAll()">Buka / Tutup Semua Modul</button>
   </div>
 
   <div id="modules-container"></div>
 
   <div class="bottom-nav">
-    <a href="index.html" class="bottom-btn">&larr; Kembali ke Portal Utama</a>
-    <a href="fase2.html" class="bottom-btn next">Lanjut ke Fase 02: IoT Server & MQTT &rarr;</a>
+    <a href="index.html" class="nav-btn">&larr; Kembali ke Portal Utama</a>
+    <a href="fase2.html" class="nav-btn">Lanjut ke Fase 02: IoT Server & MQTT &rarr;</a>
   </div>
 </div>
 
 <script>
-const modulesData = [
-  // MINGGU 1
+const modules = [
   {
-    week: 'w1', weekTitle: 'MINGGU 01 // NAVIGASI SISTEM, HAK AKSES, STORAGE & JARINGAN DASAR',
-    day: 1, title: 'Instalasi Lab, Struktur Direktori & Penyaringan Log (grep/awk)',
+    day: 1, week: "w1",
+    title: "Instalasi Oracle VirtualBox, Ubuntu Server 24.04 LTS & Navigasi Sistem",
     blocks: [
       {
-        t: 'BLOK 1 (2 Jam) — Setup Environment & Eksplorasi Hierarki Linux',
-        d: 'Jalankan Ubuntu Server di VirtualBox/VMware (atau sesi Ubuntu di Termux). Periksa direktori akar sistem (/etc untuk konfigurasi, /var untuk log, /opt untuk aplikasi tambahan).',
-        cmd: `pwd
-ls -la /
+        name: "Blok 1 (2 Jam): Instalasi Oracle VirtualBox & Pembuatan Mesin Virtual (VM)",
+        steps: [
+          "Unduh dan instal <strong>Oracle VirtualBox</strong> dari situs resmi <code>virtualbox.org</code> sesuai OS laptop/PC kamu (Windows/Linux/macOS).",
+          "Unduh file image <strong>Ubuntu Server 24.04 LTS (.iso)</strong> dari <code>ubuntu.com/download/server</code>.",
+          "Catatan BIOS: Jika VirtualBox menampilkan error virtualisasi, restart PC masuk ke BIOS/UEFI dan aktifkan <strong>Intel VT-x</strong> atau <strong>AMD-V</strong>.",
+          "Buka VirtualBox &rarr; klik <strong>New</strong>: beri nama <code>Ubuntu-IoT-Server</code>, Type: <code>Linux</code>, Version: <code>Ubuntu (64-bit)</code>.",
+          "Alokasikan hardware VM: <strong>Base Memory (RAM): 2048 MB (2 GB)</strong>, <strong>Processors: 2 CPU</strong>, dan <strong>Virtual Hard Disk: 20 GB (VDI, Dynamically Allocated)</strong>.",
+          "Klik <strong>Settings &rarr; Network</strong> pada VM tersebut: ubah <em>Attached to</em> dari NAT menjadi <strong>Bridged Adapter</strong> agar VM mendapat alamat IP lokal dari router/hotspot Wi-Fi seperti komputer fisik tersendiri.",
+          "Klik <strong>Settings &rarr; Storage</strong> &rarr; klik ikon CD <em>Empty</em> &rarr; pilih file ISO <code>ubuntu-24.04-live-server-amd64.iso</code>, lalu klik <strong>Start</strong>."
+        ]
+      },
+      {
+        name: "Blok 2 (2 Jam): Instalasi Ubuntu Server 24.04 LTS Step-by-Step",
+        steps: [
+          "Pilih bahasa <strong>English</strong> &rarr; pilih <strong>Continue without updating</strong> &rarr; Keyboard layout <strong>English (US)</strong>.",
+          "Pada layar <em>Ubuntu Server</em>, biarkan default <strong>Ubuntu Server</strong> &rarr; <strong>Done</strong>.",
+          "Pada <em>Network connections</em>, pastikan interface <code>enp0s3</code> mendapat alamat IP otomatis (DHCP) &rarr; <strong>Done</strong>. Kosongkan Proxy dan biarkan Mirror address default.",
+          "Pada <em>Guided storage configuration</em>, pilih <strong>Use an entire disk</strong> (hapus centang LVM jika ingin partisi simpel) &rarr; <strong>Done</strong> &rarr; pilih <strong>Continue</strong> untuk konfirmasi format disk virtual.",
+          "Isi <em>Profile setup</em>: Your name: <code>Admin IoT</code>, Server name: <code>iot-server</code>, Username: <code>adminiot</code>, Password: buat password yang mudah diingat.",
+          "<strong>PENTING:</strong> Pada layar <em>SSH Setup</em>, tekan tombol <strong>Spasi</strong> untuk mencentang <strong>Install OpenSSH server</strong> &rarr; <strong>Done</strong>. Lewati layar <em>Featured Server Snaps</em> &rarr; tunggu proses instalasi selesai lalu pilih <strong>Reboot Now</strong> (tekan Enter jika diminta melepas media instalasi)."
+        ]
+      },
+      {
+        name: "Blok 3 (2 Jam): Login Pertama, Eksplorasi Direktori & Penyaringan Log",
+        steps: [
+          "Login menggunakan username <code>adminiot</code> dan password yang dibuat tadi. Perbarui sistem dan eksplorasi struktur folder Linux (<code>/etc</code>, <code>/var/log</code>, <code>/opt</code>, <code>/home</code>).",
+          "Jalankan perintah di bawah ini untuk mempraktikkan navigasi dan menyaring pesan error dari log sistem:"
+        ],
+        code: `sudo apt update && sudo apt upgrade -y
+pwd
 ls -la /etc /var/log
-df -h && free -m`
-      },
-      {
-        t: 'BLOK 2 (2 Jam) — Manipulasi File & Pencarian Cepat',
-        d: 'Buat direktori latihan, salin file konfigurasi contoh, dan latih pencarian file berdasarkan nama maupun ukuran.',
-        cmd: `mkdir -p ~/lab_hari1/{arsip,log_uji}
-cp /etc/passwd ~/lab_hari1/arsip/users.bak
-find /etc -name "*.conf" 2>/dev/null | head -n 15
-mv ~/lab_hari1/arsip/users.bak ~/lab_hari1/users_copy.txt`
-      },
-      {
-        t: 'BLOK 3 (2 Jam) — Simulasi & Filter File Log Raksasa',
-        d: 'Buat file log simulasi berisi ribuan baris lalu saring hanya baris CRITICAL beserta alamat IP-nya menggunakan grep dan awk.',
-        cmd: `for i in {1..500}; do echo "2026-11-22 08:0$i INFO Service ok 10.0.0.$((i%254))"; done > ~/lab_hari1/log_uji/server.log
-echo "2026-11-22 08:59:11 CRITICAL Auth failed from 192.168.1.99" >> ~/lab_hari1/log_uji/server.log
-grep "CRITICAL" ~/lab_hari1/log_uji/server.log | awk '{print "Waktu:", $2, "| IP Penyerang:", $7}'`
+mkdir -p ~/lab-hari1/arsip
+cp /var/log/syslog ~/lab-hari1/syslog_backup.log
+grep -i "error" ~/lab-hari1/syslog_backup.log | head -n 15
+awk '{print $1, $2, $3, $5}' ~/lab-hari1/syslog_backup.log | tail -n 10`
       }
     ],
-    goal: 'Mampu menavigasi direktori tanpa GUI dan mengekstrak informasi spesifik dari file log ratusan baris dalam hitungan detik.'
+    goal: "VM Ubuntu Server berjalan stabil di VirtualBox dengan IP Bridged aktif, berhasil login sebagai adminiot, dan mampu menyaring kolom spesifik dari file syslog menggunakan grep dan awk."
   },
   {
-    week: 'w1',
-    day: 2, title: 'Manajemen User, Grup, Sudoers & Hak Akses Sticky Bit',
+    day: 2, week: "w1",
+    title: "Manajemen User, Grup, Sudoers & Hak Akses (Sticky Bit)",
     blocks: [
       {
-        t: 'BLOK 1 (2 Jam) — Pembuatan User, Grup & Hak Sudo',
-        d: 'Buat grup tim operasional serta dua akun pengguna (teknisi dan admin), lalu berikan hak sudo hanya kepada admin.',
-        cmd: `sudo groupadd tim_iot
-sudo useradd -m -s /bin/bash -G tim_iot teknisi
-sudo useradd -m -s /bin/bash -G tim_iot,sudo admin_iot
-echo "teknisi:PassTeknisi123" | sudo chpasswd
-echo "admin_iot:PassAdmin123" | sudo chpasswd`
+        name: "Blok 1 (2 Jam): Pembuatan Akun Teknisi & Konfigurasi Grup",
+        steps: [
+          "Buat grup khusus bernama <code>tim_iot</code>, lalu buat dua user baru yaitu <code>teknisi1</code> dan <code>supervisor</code>."
+        ],
+        code: `sudo groupadd tim_iot
+sudo useradd -m -s /bin/bash -G tim_iot teknisi1
+sudo useradd -m -s /bin/bash -G tim_iot supervisor
+sudo passwd teknisi1
+sudo passwd supervisor
+id teknisi1`
       },
       {
-        t: 'BLOK 2 (2 Jam) — Pengaturan Permission Oktal & Kepemilikan',
-        d: 'Buat folder proyek bersama di /opt/proyek_iot dan atur kepemilikan grup serta izin akses 770.',
-        cmd: `sudo mkdir -p /opt/proyek_iot
+        name: "Blok 2 (2 Jam): Hak Akses Oktal (chmod) & Kepemilikan (chown)",
+        steps: [
+          "Buat direktori proyek bersama di <code>/opt/proyek_iot</code> dan atur kepemilikan grupnya ke <code>tim_iot</code>."
+        ],
+        code: `sudo mkdir -p /opt/proyek_iot
 sudo chown root:tim_iot /opt/proyek_iot
-sudo chmod 770 /opt/proyek_iot
+sudo chmod 2770 /opt/proyek_iot
 ls -ld /opt/proyek_iot`
       },
       {
-        t: 'BLOK 3 (2 Jam) — Studi Kasus Sticky Bit (Mencegah Penghapusan File Rekan)',
-        d: 'Aktifkan Sticky Bit (+t / 1770) pada folder bersama agar user teknisi tidak bisa menghapus file milik admin_iot di dalam folder yang sama.',
-        cmd: `sudo chmod 1770 /opt/proyek_iot
-sudo -u admin_iot touch /opt/proyek_iot/config_utama.conf
-sudo -u teknisi rm /opt/proyek_iot/config_utama.conf`
+        name: "Blok 3 (2 Jam): Studi Kasus Sticky Bit & Pengujian Multi-User",
+        steps: [
+          "Terapkan <strong>Sticky Bit (+t)</strong> pada folder proyek agar anggota tim bisa membuat file di dalamnya, tetapi tidak bisa menghapus file milik rekan kerjanya."
+        ],
+        code: `sudo chmod +t /opt/proyek_iot
+su - supervisor -c "touch /opt/proyek_iot/laporan_rahasia.txt"
+su - teknisi1 -c "touch /opt/proyek_iot/catatan_teknisi.txt"
+su - teknisi1 -c "rm /opt/proyek_iot/laporan_rahasia.txt"`
       }
     ],
-    goal: 'Perintah terakhir menghasilkan "Operation not permitted", membuktikan user teknisi tidak bisa menghapus file milik admin meski berada di folder bersama.'
+    goal: "Perintah rm oleh teknisi1 terhadap file milik supervisor ditolak (Operation not permitted) meskipun keduanya berada di folder yang sama."
   },
   {
-    week: 'w1',
-    day: 3, title: 'Manajemen Paket APT, Partisi Disk & Mounting Permanen (/etc/fstab)',
+    day: 3, week: "w1",
+    title: "Manajemen Paket & Penambahan Virtual Hard Disk (/etc/fstab)",
     blocks: [
       {
-        t: 'BLOK 1 (2 Jam) — Pemeliharaan Paket & Pembersihan Cache APT',
-        d: 'Perbarui indeks repositori, instal utilitas pemantau sistem, dan bersihkan sisa paket yang tidak terpakai.',
-        cmd: `sudo apt update && sudo apt install -y htop ncdu tree curl net-tools
-sudo apt autoremove -y && sudo apt clean`
+        name: "Blok 1 (2 Jam): Audit Kapasitas Penyimpanan & Tambah Disk di VirtualBox",
+        steps: [
+          "Matikan VM sementara (<code>sudo poweroff</code>).",
+          "Di VirtualBox: buka <strong>Settings &rarr; Storage</strong> &rarr; klik ikon <strong>Add Hard Disk (+)</strong> di sebelah Controller SATA &rarr; <strong>Create</strong> &rarr; pilih VDI, ukuran <strong>5 GB</strong>, beri nama <code>Disk-Data-IoT.vdi</code> &rarr; Choose &rarr; OK.",
+          "Nyalakan kembali VM dan periksa deteksi disk baru (biasanya muncul sebagai <code>/dev/sdb</code>)."
+        ],
+        code: `df -h
+lsblk`
       },
       {
-        t: 'BLOK 2 (2 Jam) — Format & Mount Virtual Disk Tambahan',
-        d: 'Tambahkan hard disk virtual 2GB di pengaturan VM (biasanya muncul sebagai /dev/sdb), buat sistem file ext4, dan mount ke /mnt/data_iot. (Jika di Termux, buat disk image virtual dengan dd).',
-        cmd: `lsblk
-sudo mkfs.ext4 /dev/sdb
-sudo mkdir -p /mnt/data_iot
-sudo mount /dev/sdb /mnt/data_iot
-df -h /mnt/data_iot`
+        name: "Blok 2 (2 Jam): Partisi & Format Disk Baru dengan ext4",
+        steps: [
+          "Buat partisi baru pada <code>/dev/sdb</code> menggunakan <code>fdisk</code> (tekan <code>n</code>, <code>p</code>, Enter 3x, lalu <code>w</code>) dan format menjadi sistem file <code>ext4</code>."
+        ],
+        code: `sudo fdisk /dev/sdb
+sudo mkfs.ext4 /dev/sdb1
+sudo mkdir -p /mnt/data_sensor
+sudo blkid /dev/sdb1`
       },
       {
-        t: 'BLOK 3 (2 Jam) — Konfigurasi Auto-Mount Aman via UUID di /etc/fstab',
-        d: 'Ambil UUID partisi dan daftarkan di /etc/fstab dengan opsi nofail agar server tidak gagal booting jika disk dilepas.',
-        cmd: `sudo blkid /dev/sdb
-echo 'UUID=GANTI-DENGAN-UUID-ASLI /mnt/data_iot ext4 defaults,nofail 0 2' | sudo tee -a /etc/fstab
-sudo mount -a`
+        name: "Blok 3 (2 Jam): Konfigurasi Automount Permanen di /etc/fstab",
+        steps: [
+          "Salin nilai <strong>UUID</strong> dari output <code>blkid</code> tadi, lalu tambahkan ke baris paling bawah file <code>/etc/fstab</code> agar disk otomatis terpasang saat server menyala."
+        ],
+        code: `echo "UUID=GANTI-DENGAN-UUID-KAMU /mnt/data_sensor ext4 defaults 0 2" | sudo tee -a /etc/fstab
+sudo mount -a
+df -h /mnt/data_sensor`
       }
     ],
-    goal: 'Perintah "sudo mount -a" berjalan tanpa pesan error dan partisi tetap terpasang otomatis setelah server di-reboot.'
+    goal: "Disk tambahan 5 GB terpasang otomatis di /mnt/data_sensor setelah perintah sudo reboot tanpa menyebabkan kegagalan booting."
   },
   {
-    week: 'w1',
-    day: 4, title: 'Manajemen Proses & Pembuatan Layanan Custom Systemd',
+    day: 4, week: "w1",
+    title: "Manajemen Proses & Pembuatan Custom Layanan Systemd",
     blocks: [
       {
-        t: 'BLOK 1 (2 Jam) — Pemantauan Proses & Sinyal Kill',
-        d: 'Jalankan proses dummy di latar belakang, cek PID-nya, dan hentikan secara bersih maupun paksa.',
-        cmd: `sleep 3600 &
-ps aux | grep sleep
-kill -15 $(pgrep sleep)`
+        name: "Blok 1 (2 Jam): Pemantauan Proses & Penggunaan Resource",
+        steps: [
+          "Instal <code>htop</code> dan pelajari cara mengidentifikasi proses berdasarkan PID serta penggunaan RAM/CPU."
+        ],
+        code: `sudo apt install -y htop
+ps aux --sort=-%mem | head -n 10
+htop`
       },
       {
-        t: 'BLOK 2 (2 Jam) — Membuat Skrip Daemon Pencatat Waktu',
-        d: 'Buat skrip sederhana di /usr/local/bin/iot-heartbeat.sh yang mencatat detak jantung server setiap 10 detik.',
-        cmd: `sudo tee /usr/local/bin/iot-heartbeat.sh << 'EOF'
+        name: "Blok 2 (2 Jam): Membuat Skrip Daemon Sederhana",
+        steps: [
+          "Buat skrip latar belakang yang mencatat detak waktu server ke file log setiap 10 detik."
+        ],
+        code: `sudo tee /usr/local/bin/iot-heartbeat.sh << 'EOF'
 #!/bin/bash
 while true; do
-  echo "$(date '+%Y-%m-%d %H:%M:%S') [OK] Node IoT Aktif" >> /var/log/iot-heartbeat.log
+  echo "[HEARTBEAT] Server aktif pada $(date)" >> /var/log/iot-heartbeat.log
   sleep 10
 done
 EOF
 sudo chmod +x /usr/local/bin/iot-heartbeat.sh`
       },
       {
-        t: 'BLOK 3 (2 Jam) — Mendaftarkan Skrip sebagai Systemd Service',
-        d: 'Buat file unit systemd agar layanan otomatis menyala saat booting dan otomatis restart jika crash.',
-        cmd: `sudo tee /etc/systemd/system/iot-heartbeat.service << 'EOF'
+        name: "Blok 3 (2 Jam): Mendaftarkan Layanan ke Systemd & Membaca Journalctl",
+        steps: [
+          "Buat file unit systemd agar skrip berjalan otomatis sebagai layanan latar belakang dan otomatis menyala ulang jika mati."
+        ],
+        code: `sudo tee /etc/systemd/system/iot-heartbeat.service << 'EOF'
 [Unit]
-Description=IoT Node Heartbeat Service
+Description=Layanan Pemantau Detak Server IoT
 After=network.target
 
 [Service]
 ExecStart=/usr/local/bin/iot-heartbeat.sh
 Restart=always
-RestartSec=5
+User=root
 
 [Install]
 WantedBy=multi-user.target
 EOF
 sudo systemctl daemon-reload
 sudo systemctl enable --now iot-heartbeat.service
-sudo systemctl status iot-heartbeat.service`
+sudo systemctl status iot-heartbeat.service
+tail -f /var/log/iot-heartbeat.log`
       }
     ],
-    goal: 'Status layanan menunjukkan "active (running)" dan file /var/log/iot-heartbeat.log terus bertambah otomatis.'
+    goal: "Layanan iot-heartbeat.service berstatus active (running) dan otomatis berjalan kembali meskipun prosesnya dimatikan paksa dengan kill -9."
   },
   {
-    week: 'w1',
-    day: 5, title: 'Diagnostik Jaringan Linux & Konfigurasi IP Statis Netplan',
+    day: 5, week: "w1",
+    title: "Diagnostik Jaringan Linux & Konfigurasi IP Statis (Netplan)",
     blocks: [
       {
-        t: 'BLOK 1 (2 Jam) — Audit Interface, Tabel Routing & Port Terbuka',
-        d: 'Periksa alamat IP, gateway default, server DNS aktif, serta seluruh port layanan yang sedang mendengarkan koneksi.',
-        cmd: `ip -br a
+        name: "Blok 1 (2 Jam): Inspeksi Antarmuka Jaringan, Gateway, DNS & Port",
+        steps: [
+          "Catat nama antarmuka jaringan (misal <code>enp0s3</code>), alamat IP saat ini, dan IP Gateway router kamu."
+        ],
+        code: `ip -c a
 ip route show
 ss -tulpn
-cat /etc/resolv.conf`
+resolvectl status`
       },
       {
-        t: 'BLOK 2 (2 Jam) — Mengatur IP Statis via Netplan (Ubuntu Server)',
-        d: 'Cadangkan file konfigurasi Netplan dan terapkan alamat IP statis agar alamat server tidak berubah-ubah saat restart.',
-        cmd: `ls /etc/netplan/
+        name: "Blok 2 (2 Jam): Mengatur IP Statis Menggunakan Netplan",
+        steps: [
+          "Cadangkan file konfigurasi Netplan lama, lalu buat konfigurasi IP Statis yang sesuai dengan segmen jaringan lokalmu (sesuaikan angka IP dengan jaringan rumahmu)."
+        ],
+        code: `ls /etc/netplan/
 sudo cp /etc/netplan/*.yaml /etc/netplan/backup.yaml.bak
-# Contoh struktur /etc/netplan/01-netcfg.yaml:
-# network:
-#   version: 2
-#   ethernets:
-#     enp0s3:
-#       addresses: [192.168.1.50/24]
-#       routes: [{to: default, via: 192.168.1.1}]
-#       nameservers: {addresses: [1.1.1.1, 8.8.8.8]}
+sudo tee /etc/netplan/01-static-ip.yaml << 'EOF'
+network:
+  version: 2
+  ethernets:
+    enp0s3:
+      dhcp4: no
+      addresses:
+        - 192.168.1.150/24
+      routes:
+        - to: default
+          via: 192.168.1.1
+      nameservers:
+        addresses: [8.8.8.8, 1.1.1.1]
+EOF
+sudo chmod 600 /etc/netplan/01-static-ip.yaml
 sudo netplan try`
       },
       {
-        t: 'BLOK 3 (2 Jam) — Latihan Alur Troubleshooting Jaringan',
-        d: 'Uji konektivitas lapis demi lapis: Loopback -> Gateway Lokal -> IP Publik -> Resolusi Domain DNS.',
-        cmd: `ping -c 2 127.0.0.1 && echo "Layer 1 OK"
-ping -c 2 $(ip route | awk '/default/ {print $3}') && echo "Gateway OK"
-ping -c 2 1.1.1.1 && echo "Internet IP OK"
-dig +short google.com && echo "DNS OK"`
+        name: "Blok 3 (2 Jam): Simulasi Troubleshooting Jaringan",
+        steps: [
+          "Uji konektivitas ke gateway, internet, dan resolusi nama domain."
+        ],
+        code: `ping -c 4 192.168.1.1
+ping -c 4 8.8.8.8
+dig google.com +short`
       }
     ],
-    goal: 'Memahami pemisahan masalah antara putus jaringan lokal, gateway, atau kegagalan resolusi DNS.'
+    goal: "Server Ubuntu memiliki IP Statis permanen (tidak berubah-ubah setelah reboot) dan berhasil melakukan ping ke domain publik."
   },
   {
-    week: 'w1',
-    day: 6, title: 'Pengerasan Akses Jarak Jauh (SSH Key Authentication & Hardening)',
+    day: 6, week: "w1",
+    title: "Akses Jarak Jauh SSH, Key-Based Auth & SSH Hardening",
     blocks: [
       {
-        t: 'BLOK 1 (2 Jam) — Instalasi OpenSSH Server & Transfer File SCP/Rsync',
-        d: 'Pastikan layanan SSH berjalan dan uji menyalin folder dari perangkat klien ke server menggunakan rsync.',
-        cmd: `sudo apt install -y openssh-server
-sudo systemctl enable --now ssh
-rsync -avz ~/lab_hari1/ localhost:/tmp/backup_test/`
+        name: "Blok 1 (2 Jam): Koneksi SSH dari Terminal Laptop/PC Utama",
+        steps: [
+          "Buka Command Prompt / PowerShell / Terminal di komputer utama (Windows/Linux/macOS), lalu hubungkan ke IP statis VM Ubuntu kamu."
+        ],
+        code: `ssh adminiot@192.168.1.150`
       },
       {
-        t: 'BLOK 2 (2 Jam) — Membuat SSH Key Pair (Login Tanpa Password)',
-        d: 'Buat kunci kriptografi Ed25519 di mesin klien dan tanamkan kunci publiknya ke server.',
-        cmd: `ssh-keygen -t ed25519 -C "admin@iot-lab"
-ssh-copy-id $USER@localhost
-ssh $USER@localhost "hostname && uptime"`
+        name: "Blok 2 (2 Jam): Membuat SSH Key Pair (Login Tanpa Password)",
+        steps: [
+          "Jalankan perintah berikut di <strong>komputer utama (Host)</strong> untuk membuat kunci kriptografi Ed25519 dan mengirim kunci publiknya ke VM Ubuntu."
+        ],
+        code: `ssh-keygen -t ed25519 -C "admin-laptop"
+ssh-copy-id adminiot@192.168.1.150`
       },
       {
-        t: 'BLOK 3 (2 Jam) — Hardening File /etc/ssh/sshd_config',
-        d: 'Matikan akses login langsung root serta matikan autentikasi password agar hanya pemilik SSH Key yang bisa masuk.',
-        cmd: `sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
-sudo sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
-sudo sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+        name: "Blok 3 (2 Jam): Pengerasan Konfigurasi SSH Server",
+        steps: [
+          "Di dalam VM Ubuntu, ubah port default SSH dari 22 menjadi <code>2222</code>, matikan login <code>root</code>, dan matikan login berbasis password."
+        ],
+        code: `sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+sudo sed -i 's/#Port 22/Port 2222/' /etc/ssh/sshd_config
+sudo sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config
+sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 sudo sshd -t && sudo systemctl restart ssh`
       }
     ],
-    goal: 'Perintah "sudo sshd -t" tidak mengeluarkan error dan login SSH hanya berhasil menggunakan kunci privat.'
+    goal: "Berhasil login ke server menggunakan perintah ssh -p 2222 adminiot@192.168.1.150 tanpa diminta password, sementara koneksi tanpa SSH Key langsung ditolak."
   },
   {
-    week: 'w1',
-    day: 7, title: 'ISTIRAHAT TOTAL & EVALUASI MANDIRI MINGGU 01',
+    day: 7, week: "w1",
+    title: "ISTIRAHAT & PEMULIHAN (OFFLINE RECOVERY DAY)",
     blocks: [
       {
-        t: 'PROTOKOL PEMULIHAN (0 Jam Layar Teknis)',
-        d: 'Lepaskan diri dari terminal selama 24 jam penuh untuk konsolidasi memori jangka panjang. Catat 3 perintah yang paling sering salah ketik selama Minggu 1 untuk diulang ringan esok pagi.',
-        cmd: `# Tidak ada perintah terminal hari ini.
-# Istirahatkan mata dan pikiran untuk persiapan Minggu 02 (Bash Scripting).`
+        name: "Protokol Minggu 1 Selesai",
+        steps: [
+          "Lepaskan diri 100% dari layar terminal selama 24 jam agar memori jangka panjang mengonsolidasikan perintah dasar Linux.",
+          "Disarankan: Ambil <strong>Snapshot</strong> kondisi bersih VM di VirtualBox (Menu Machine &rarr; Take Snapshot &rarr; beri nama <code>Minggu1-Clean</code>) sebelum istirahat."
+        ]
       }
     ],
-    goal: 'Kembali segar pada Hari ke-8 tanpa gejala burnout.'
+    goal: "Otak segar kembali dan titik pemulihan (Snapshot) Minggu 1 tersimpan aman di VirtualBox."
   },
-
-  // MINGGU 2
   {
-    week: 'w2', weekTitle: 'MINGGU 02 // BASH SCRIPTING, AUTOMASI CRON & GIT PORTFOLIO',
-    day: 8, title: 'Bash Scripting: Variabel, Percabangan If-Else & Auto-Heal Service',
+    day: 8, week: "w2",
+    title: "Bash Scripting Dasar: Variabel, Kondisi & Watchdog Layanan",
     blocks: [
       {
-        t: 'BLOK 1 (2 Jam) — Struktur Dasar Skrip Bash & Exit Code',
-        d: 'Pelajari penggunaan shebang #!/bin/bash, variabel lingkungan, dan pengecekan kode status perintah ($?).',
-        cmd: `mkdir -p ~/scripts
-cat << 'EOF' > ~/scripts/cek_sistem.sh
-#!/bin/bash
-HOST=$(hostname)
-TGL=$(date '+%F %T')
-echo "[$TGL] Memeriksa node: $HOST"
-EOF
-chmod +x ~/scripts/cek_sistem.sh && ~/scripts/cek_sistem.sh`
-      },
-      {
-        t: 'BLOK 2 & 3 (4 Jam) — Membuat Skrip Self-Healing Layanan Otomatis',
-        d: 'Buat skrip watchdog yang memeriksa apakah layanan iot-heartbeat aktif; jika mati, skrip otomatis menyalakannya kembali dan mencatat kejadian ke log.',
-        cmd: `cat << 'EOF' > ~/scripts/watchdog.sh
+        name: "Blok 1-3 (6 Jam): Membuat Skrip Auto-Heal Service Watchdog",
+        steps: [
+          "Buat folder kerja <code>~/scripts</code> dan tulis skrip Bash yang memeriksa apakah layanan penting (seperti <code>ssh</code> atau <code>iot-heartbeat</code>) aktif; jika mati, otomatis nyalakan kembali."
+        ],
+        code: `mkdir -p ~/scripts && cd ~/scripts
+cat << 'EOF' > watchdog.sh
 #!/bin/bash
 SERVICE="iot-heartbeat"
+LOGFILE="$HOME/scripts/watchdog.log"
+
 if systemctl is-active --quiet $SERVICE; then
-  echo "$(date): $SERVICE berjalan normal."
+    echo "$(date): [OK] Layanan $SERVICE berjalan normal." >> $LOGFILE
 else
-  echo "$(date): PERINGATAN! $SERVICE mati. Menyalakan ulang..." >> /tmp/watchdog.log
-  sudo systemctl start $SERVICE
+    echo "$(date): [ALERT] $SERVICE mati! Memulai ulang..." >> $LOGFILE
+    sudo systemctl start $SERVICE
 fi
 EOF
-chmod +x ~/scripts/watchdog.sh
-sudo systemctl stop iot-heartbeat
-~/scripts/watchdog.sh`
+chmod +x watchdog.sh
+./watchdog.sh && cat watchdog.log`
       }
     ],
-    goal: 'Layanan iot-heartbeat yang sengaja dimatikan otomatis aktif kembali saat skrip watchdog.sh dijalankan.'
+    goal: "Saat layanan iot-heartbeat dimatikan secara manual lalu ./watchdog.sh dijalankan, skrip otomatis mendeteksi gangguan dan menghidupkan layanan kembali."
   },
   {
-    week: 'w2',
-    day: 9, title: 'Bash Scripting: Perulangan (For/While) & Provisioning Massal User',
+    day: 9, week: "w2",
+    title: "Bash Scripting Lanjutan: Loop & Provisioning User Massal",
     blocks: [
       {
-        t: 'BLOK 1 (2 Jam) — Perulangan Daftar & Pembacaan File Baris per Baris',
-        d: 'Buat daftar 5 perangkat sensor dalam file teks dan lakukan iterasi pengecekan status menggunakan loop.',
-        cmd: `printf "sensor-01\nsensor-02\nsensor-03\nsensor-04\nsensor-05\n" > ~/scripts/daftar_node.txt
-for node in $(cat ~/scripts/daftar_node.txt); do
-  echo "Memverifikasi konfigurasi untuk $node ... [OK]"
-done`
-      },
-      {
-        t: 'BLOK 2 & 3 (4 Jam) — Skrip Pembuatan Akun Operator Massal',
-        d: 'Tulis skrip yang membaca daftar nama operator dari file, membuat akun Linux-nya jika belum ada, dan menetapkan kata sandi awal.',
-        cmd: `cat << 'EOF' > ~/scripts/buat_user_massal.sh
-#!/bin/bash
-FILE_USER="$1"
-if [ ! -f "$FILE_USER" ]; then echo "File tidak ditemukan!"; exit 1; fi
-while IFS= read -r username; do
-  if id "$username" &>/dev/null; then
-    echo "User $username sudah ada, dilewati."
-  else
-    sudo useradd -m -s /bin/bash "$username"
-    echo "$username:InitPass2026!" | sudo chpasswd
-    echo "User $username berhasil dibuat."
-  fi
-done < "$FILE_USER"
+        name: "Blok 1-3 (6 Jam): Otomasi Pembuatan Banyak Akun dari File Daftar",
+        steps: [
+          "Buat file daftar <code>daftar_teknisi.txt</code> berisi 5 nama user, lalu tulis skrip <code>buat_user.sh</code> menggunakan perulangan <code>while read</code>."
+        ],
+        code: `cat << 'EOF' > ~/scripts/daftar_teknisi.txt
+operator_gardu1
+operator_gardu2
+operator_gardu3
+auditor_iot1
+auditor_iot2
 EOF
-chmod +x ~/scripts/buat_user_massal.sh`
+
+cat << 'EOF' > ~/scripts/buat_user.sh
+#!/bin/bash
+FILE="daftar_teknisi.txt"
+while IFS= read -r USER; do
+    if id "$USER" &>/dev/null; then
+        echo "[SKIP] User $USER sudah terdaftar."
+    else
+        sudo useradd -m -s /bin/bash "$USER"
+        echo "$USER:IoT2026!" | sudo chpasswd
+        echo "[CREATED] User $USER berhasil dibuat."
+    fi
+done < "$FILE"
+EOF
+chmod +x ~/scripts/buat_user.sh
+cd ~/scripts && ./buat_user.sh`
       }
     ],
-    goal: 'Mampu membuat puluhan akun pengguna secara otomatis dari satu file daftar tanpa duplikasi error.'
+    goal: "Kelima akun user terbuat otomatis dalam sekali eksekusi dan skrip tidak error jika dijalankan ulang kedua kalinya."
   },
   {
-    week: 'w2',
-    day: 10, title: 'Penjadwalan Tugas Otomatis dengan Cron & Rotasi Backup',
+    day: 10, week: "w2",
+    title: "Penjadwalan Tugas Otomatis dengan Cron & Rotasi Backup",
     blocks: [
       {
-        t: 'BLOK 1 (2 Jam) — Sintaks Crontab & Variabel Lingkungan Cron',
-        d: 'Pahami 5 kolom waktu cron (menit, jam, tanggal, bulan, hari) dan buat folder penyimpanan arsip backup.',
-        cmd: `sudo mkdir -p /var/backups/iot_config
-sudo chown $USER:$USER /var/backups/iot_config`
-      },
-      {
-        t: 'BLOK 2 & 3 (4 Jam) — Skrip Backup Terkompresi & Penghapusan Arsip Lama',
-        d: 'Buat skrip yang mengarsipkan folder /etc/systemd/system dengan stempel waktu dan menghapus backup yang berusia lebih dari 7 hari, lalu jadwalkan di crontab.',
-        cmd: `cat << 'EOF' > ~/scripts/backup_harian.sh
+        name: "Blok 1-3 (6 Jam): Skrip Backup Terkompresi + Crontab Setiap Jam",
+        steps: [
+          "Buat skrip backup folder konfigurasi <code>/etc</code> dan <code>~/scripts</code> ke dalam arsip <code>.tar.gz</code> bertanggal, sekaligus menghapus arsip yang berusia lebih dari 7 hari."
+        ],
+        code: `mkdir -p ~/backups
+cat << 'EOF' > ~/scripts/auto_backup.sh
 #!/bin/bash
-DEST="/var/backups/iot_config"
-FILE="$DEST/systemd-backup-$(date +%Y%m%d-%H%M).tar.gz"
-tar -czf "$FILE" /etc/systemd/system/ 2>/dev/null
-find "$DEST" -type f -name "*.tar.gz" -mtime +7 -delete
-echo "$(date): Backup selesai -> $FILE" >> "$DEST/backup.log"
+TANGGAL=$(date +%Y-%m-%d_%H-%M)
+TUJUAN="$HOME/backups/backup_iot_$TANGGAL.tar.gz"
+tar -czf "$TUJUAN" "$HOME/scripts" /etc/netplan 2>/dev/null
+find "$HOME/backups" -type f -name "*.tar.gz" -mtime +7 -delete
+echo "$(date): Backup tersimpan di $TUJUAN" >> "$HOME/backups/backup.log"
 EOF
-chmod +x ~/scripts/backup_harian.sh
-~/scripts/backup_harian.sh
-(crontab -l 2>/dev/null; echo "0 * * * * $HOME/scripts/backup_harian.sh") | crontab -
+chmod +x ~/scripts/auto_backup.sh
+./scripts/auto_backup.sh
+(crontab -l 2>/dev/null; echo "0 * * * * $HOME/scripts/auto_backup.sh") | crontab -
 crontab -l`
       }
     ],
-    goal: 'File arsip .tar.gz terbentuk di /var/backups/iot_config dan jadwal cron terdaftar aktif.'
+    goal: "File arsip backup_iot_*.tar.gz terbentuk di folder ~/backups dan jadwal cron terdaftar aktif di crontab."
   },
   {
-    week: 'w2',
-    day: 11, title: 'Pemantauan Kesehatan Server (CPU, RAM, Disk) Otomatis',
+    day: 11, week: "w2",
+    title: "Skrip Pemantau Kesehatan Server (CPU, RAM & Disk Alert)",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Membangun Resource Monitor & Alert Threshold',
-        d: 'Buat skrip pemantau yang menghitung persentase penggunaan RAM dan ruang disk root (/), lalu mencatat peringatan kritis jika penggunaan disk melewati 80%.',
-        cmd: `cat << 'EOF' > ~/scripts/health_check.sh
+        name: "Blok 1-3 (6 Jam): Monitoring Resource Real-Time ke File CSV",
+        steps: [
+          "Buat skrip <code>server_health.sh</code> yang mengambil persentase pemakaian CPU, RAM, dan Disk lalu menyimpannya ke file CSV setiap 5 menit via cron."
+        ],
+        code: `cat << 'EOF' > ~/scripts/server_health.sh
 #!/bin/bash
-DISK_USE=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
-MEM_USE=$(free | awk '/Mem:/ {printf("%.0f", $3/$2 * 100)}')
-LOAD=$(uptime | awk -F'load average:' '{print $2}')
-echo "$(date '+%F %T') | Disk: \${DISK_USE}% | RAM: \${MEM_USE}% | Load:$LOAD" >> ~/scripts/health.log
-if [ "$DISK_USE" -gt 80 ]; then
-  echo "ALERT: Kapasitas disk kritis (\${DISK_USE}%)!" >> ~/scripts/health.log
-fi
+CSV="$HOME/scripts/metrics.csv"
+[ ! -f "$CSV" ] && echo "Timestamp,CPU_Load,RAM_Used_MB,Disk_Used_Pct" > "$CSV"
+TS=$(date "+%Y-%m-%d %H:%M:%S")
+CPU=$(uptime | awk -F'load average:' '{ print $2 }' | cut -d, -f1 | xargs)
+RAM=$(free -m | awk '/Mem:/ { print $3 }')
+DISK=$(df -h / | awk 'NR==2 { print $5 }')
+echo "$TS,$CPU,$RAM,$DISK" >> "$CSV"
 EOF
-chmod +x ~/scripts/health_check.sh
-~/scripts/health_check.sh && cat ~/scripts/health.log`
+chmod +x ~/scripts/server_health.sh
+./scripts/server_health.sh && cat ~/scripts/metrics.csv`
       }
     ],
-    goal: 'Log kesehatan sistem tercetak rapi dengan nilai persentase Disk, RAM, dan Load Average yang akurat.'
+    goal: "File metrics.csv terisi baris metrik server rapi dan siap dianalisis."
   },
   {
-    week: 'w2',
-    day: 12, title: 'Kontrol Versi Git & Publikasi Portofolio Pertama di GitHub',
+    day: 12, week: "w2",
+    title: "Version Control dengan Git & Publikasi Portofolio Pertama ke GitHub",
     blocks: [
       {
-        t: 'BLOK 1 (2 Jam) — Konfigurasi Git Lokal',
-        d: 'Instal Git dan atur identitas nama serta email yang terhubung dengan akun GitHub kamu.',
-        cmd: `sudo apt install -y git
+        name: "Blok 1-3 (6 Jam): Inisialisasi Git & Push Skrip ke GitHub",
+        steps: [
+          "Instal Git, konfigurasi identitas, buat repositori baru bernama <code>linux-sysadmin-scripts</code> di akun GitHub-mu, lalu unggah seluruh skrip Bash dari Hari 8–11."
+        ],
+        code: `sudo apt install -y git
 git config --global user.name "Nama Kamu"
-git config --global user.email "emailkamu@domain.com"
-git config --global init.defaultBranch main`
-      },
-      {
-        t: 'BLOK 2 & 3 (4 Jam) — Inisialisasi Repositori & Push Skrip Administrasi',
-        d: 'Ubah folder ~/scripts menjadi repositori Git, tambahkan file README.md dokumentasi, dan unggah ke GitHub menggunakan Personal Access Token (PAT) atau SSH Key.',
-        cmd: `cd ~/scripts
+git config --global user.email "emailkamu@example.com"
+cd ~/scripts
 git init
-echo "# Linux Server Automation Scripts" > README.md
+echo -e "# Linux SysAdmin Automation Scripts
+Kumpulan skrip Bash untuk watchdog layanan, provisioning user, backup otomatis, dan monitoring kesehatan server." > README.md
 git add .
-git commit -m "Initial commit: watchdog, user provisioning, backup & health check scripts"
-git status`
+git commit -m "Initial commit: Bash automation scripts"
+git branch -M main
+git remote add origin https://github.com/USERNAME_KAMU/linux-sysadmin-scripts.git
+git push -u origin main`
       }
     ],
-    goal: 'Seluruh skrip Bash dari Hari 8–11 tersimpan rapi di repositori GitHub publik sebagai bukti keterampilan awal.'
+    goal: "Seluruh skrip Bash tampil rapi di repositori publik GitHub sebagai bukti portofolio teknis pertama."
   },
   {
-    week: 'w2',
-    day: 13, title: 'Mini-Project Minggu 02: Simulasi Insiden & Pemulihan Sistem',
+    day: 13, week: "w2",
+    title: "Mini-Project Minggu 2: Simulasi Insiden & Pemulihan Disk Penuh",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Latihan Troubleshooting Tanpa Panduan',
-        d: 'Simulasikan 3 kerusakan umum pada server: (1) Buat file dummy 1GB untuk memenuhi disk dan temukan lokasinya dengan ncdu/du, (2) Cabut izin eksekusi skrip cron, (3) Salah ketik nama layanan di watchdog.sh, lalu diagnosa dan pulihkan semuanya.',
-        cmd: `fallocate -l 500M /tmp/file_sampah_besar.img
-du -ah /tmp 2>/dev/null | sort -rh | head -n 5
-rm -f /tmp/file_sampah_besar.img`
+        name: "Blok 1-3 (6 Jam): Latihan Troubleshooting Disk Full & Permission Rusak",
+        steps: [
+          "Simulasikan kepenuhan kapasitas penyimpanan dengan membuat file dummy 2 GB menggunakan <code>fallocate</code>, lalu latih perintah pencarian file besar (<code>du -sh</code> / <code>ncdu</code>) dan pembersihannya."
+        ],
+        code: `sudo fallocate -l 2G /var/tmp/file_sampah_besar.img
+df -h
+sudo du -ah /var/tmp | sort -rh | head -n 5
+sudo rm -f /var/tmp/file_sampah_besar.img
+df -h`
       }
     ],
-    goal: 'Mampu menemukan dan menghapus file penyebab disk penuh serta memperbaiki skrip rusak di bawah 15 menit.'
+    goal: "Mampu melacak sumber pembengkakan disk dalam waktu kurang dari 2 menit menggunakan du dan sort."
   },
   {
-    week: 'w2',
-    day: 14, title: 'ISTIRAHAT TOTAL & REVIEW MINGGU 02',
+    day: 14, week: "w2",
+    title: "ISTIRAHAT & PEMULIHAN (OFFLINE RECOVERY DAY)",
     blocks: [
       {
-        t: 'PROTOKOL PEMULIHAN (0 Jam Layar Teknis)',
-        d: 'Istirahat penuh dari layar kode. Minggu depan kita masuk ke keamanan jaringan perimeter (Firewall), Web Server HTTPS, dan Database.',
-        cmd: `# Istirahat total hari ke-14.`
+        name: "Protokol Minggu 2 Selesai",
+        steps: [
+          "Istirahat penuh dari layar teknis. Buat Snapshot VirtualBox baru bernama <code>Minggu2-Automation</code>."
+        ]
       }
     ],
-    goal: 'Menjaga ritme konsistensi menuju paruh kedua Bulan 01.'
+    goal: "Pemulihan energi penuh sebelum memasuki materi jaringan dan keamanan layanan di Minggu 3."
   },
-
-  // MINGGU 3
   {
-    week: 'w3', weekTitle: 'MINGGU 03 // FIREWALL UFW, NGINX HTTPS, DATABASE & PACKET SNIFFING',
-    day: 15, title: 'Konfigurasi Firewall Perimeter dengan UFW (Uncomplicated Firewall)',
+    day: 15, week: "w3",
+    title: "Konfigurasi Firewall dengan UFW (Uncomplicated Firewall)",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Kebijakan Default Deny & Pembukaan Port Terbatas',
-        d: 'Terapkan prinsip Zero Trust pada jaringan server: blokir seluruh trafik masuk secara default, dan izinkan hanya port SSH serta HTTP/HTTPS.',
-        cmd: `sudo apt install -y ufw
+        name: "Blok 1-3 (6 Jam): Kebijakan Default Deny & Pembukaan Port Spesifik",
+        steps: [
+          "Atur firewall agar memblokir semua koneksi masuk secara default, namun tetap mengizinkan port SSH kustom (<code>2222/tcp</code>), HTTP (<code>80</code>), dan HTTPS (<code>443</code>)."
+        ],
+        code: `sudo apt install -y ufw
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-sudo ufw allow OpenSSH
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw --force enable
+sudo ufw allow 2222/tcp comment 'Custom SSH Port'
+sudo ufw allow 80/tcp comment 'HTTP Web'
+sudo ufw allow 443/tcp comment 'HTTPS Secure'
+sudo ufw enable
 sudo ufw status verbose`
       }
     ],
-    goal: 'Status UFW aktif dengan kebijakan "deny (incoming)" dan hanya port 22, 80, 443 yang terbuka.'
+    goal: "Status UFW active dengan aturan ketat; koneksi SSH pada port 2222 tetap berjalan lancar tanpa terputus."
   },
   {
-    week: 'w3',
-    day: 16, title: 'Instalasi Web Server Nginx & Konfigurasi Virtual Host',
+    day: 16, week: "w3",
+    title: "Instalasi & Konfigurasi Web Server Nginx + Virtual Host",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Deploy Portal Status Server Lokal',
-        d: 'Instal Nginx, buat halaman HTML status sistem lokal, dan konfigurasi Virtual Host pada port 80.',
-        cmd: `sudo apt install -y nginx
+        name: "Blok 1-3 (6 Jam): Membangun Portal Status Server IoT di Nginx",
+        steps: [
+          "Instal Nginx, buat direktori web kustom, halaman status HTML, dan aktifkan konfigurasi Server Block."
+        ],
+        code: `sudo apt install -y nginx
 sudo mkdir -p /var/www/iot-status
-echo "<h1>NODE GATEWAY IOT: ONLINE</h1>" | sudo tee /var/www/iot-status/index.html
+echo "<h1>IOT GATEWAY SERVER // STATUS: ONLINE</h1>" | sudo tee /var/www/iot-status/index.html
 sudo tee /etc/nginx/sites-available/iot-status << 'EOF'
 server {
     listen 80;
     server_name _;
     root /var/www/iot-status;
     index index.html;
+    location / {
+        try_files $uri $uri/ =404;
+    }
 }
 EOF
-sudo ln -sf /etc/nginx/sites-available/iot-status /etc/nginx/sites-enabled/
-sudo rm -f /etc/nginx/sites-enabled/default
-sudo nginx -t && sudo systemctl reload nginx
-curl -I http://localhost`
+sudo ln -sf /etc/nginx/sites-available/iot-status /etc/nginx/sites-enabled/default
+sudo nginx -t && sudo systemctl reload nginx`
       }
     ],
-    goal: 'Perintah curl mengembalikan status "HTTP/1.1 200 OK" dengan konten halaman status kustom.'
+    goal: "Halaman web status tampil saat alamat http://192.168.1.150 dibuka dari browser komputer utama."
   },
   {
-    week: 'w3',
-    day: 17, title: 'Enkripsi Lalu Lintas Web dengan Sertifikat SSL/TLS (HTTPS)',
+    day: 17, week: "w3",
+    title: "Mengamankan Nginx dengan Sertifikat SSL/TLS Lokal (HTTPS)",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Membuat Sertifikat TLS & Mengaktifkan HTTPS di Nginx',
-        d: 'Bangkitkan pasangan kunci privat dan sertifikat SSL menggunakan OpenSSL, lalu arahkan trafik HTTP (80) agar otomatis dialihkan ke HTTPS (443).',
-        cmd: `sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout /etc/ssl/private/iot-selfsigned.key \
-  -out /etc/ssl/certs/iot-selfsigned.crt \
-  -subj "/C=ID/ST=Jateng/L=Semarang/O=IoTLab/CN=iot-gateway.local"
+        name: "Blok 1-3 (6 Jam): Generate Sertifikat OpenSSL & Konfigurasi HTTPS",
+        steps: [
+          "Buat kunci privat dan sertifikat SSL lokal menggunakan OpenSSL, lalu konfigurasikan Nginx agar mengalihkan HTTP ke HTTPS."
+        ],
+        code: `sudo mkdir -p /etc/nginx/ssl
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048   -keyout /etc/nginx/ssl/iot-server.key   -out /etc/nginx/ssl/iot-server.crt   -subj "/C=ID/ST=CentralJava/L=Semarang/O=IoTLab/CN=192.168.1.150"
+
 sudo tee /etc/nginx/sites-available/iot-status << 'EOF'
 server {
     listen 80;
@@ -800,148 +821,163 @@ server {
 }
 server {
     listen 443 ssl;
-    ssl_certificate /etc/ssl/certs/iot-selfsigned.crt;
-    ssl_certificate_key /etc/ssl/private/iot-selfsigned.key;
+    ssl_certificate /etc/nginx/ssl/iot-server.crt;
+    ssl_certificate_key /etc/nginx/ssl/iot-server.key;
     root /var/www/iot-status;
     index index.html;
 }
 EOF
-sudo nginx -t && sudo systemctl reload nginx
-curl -kI https://localhost`
+sudo nginx -t && sudo systemctl reload nginx`
       }
     ],
-    goal: 'Akses ke http://localhost otomatis dialihkan (301) ke https://localhost yang terenkripsi TLS.'
+    goal: "Akses ke http://192.168.1.150 otomatis dialihkan ke https://192.168.1.150 dengan sertifikat TLS aktif."
   },
   {
-    week: 'w3',
-    day: 18, title: 'Administrasi Database Relasional MariaDB di Terminal Linux',
+    day: 18, week: "w3",
+    title: "Administrasi Database MariaDB & Operasi SQL Terminal",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Instalasi MariaDB, Pembuatan Skema Tabel & Query Dasar',
-        d: 'Instal MariaDB Server, buat database inventaris perangkat IoT beserta tabel log sensor, dan latih operasi CRUD dasar.',
-        cmd: `sudo apt install -y mariadb-server
+        name: "Blok 1-3 (6 Jam): Instalasi MariaDB, Pembuatan Database & Tabel Perangkat",
+        steps: [
+          "Instal MariaDB Server, amankan instalasi, lalu buat database <code>iot_inventory</code> beserta tabel daftar perangkat smart meter."
+        ],
+        code: `sudo apt install -y mariadb-server
 sudo systemctl enable --now mariadb
-sudo mysql -e "CREATE DATABASE IF NOT EXISTS iot_db;
-CREATE USER IF NOT EXISTS 'iot_admin'@'localhost' IDENTIFIED BY 'DbPass2026!';
-GRANT ALL PRIVILEGES ON iot_db.* TO 'iot_admin'@'localhost';
-FLUSH PRIVILEGES;
-USE iot_db;
-CREATE TABLE devices (id INT AUTO_INCREMENT PRIMARY KEY, device_code VARCHAR(30), location VARCHAR(50), status VARCHAR(15));
-INSERT INTO devices (device_code, location, status) VALUES ('SM-001', 'Gardu Induk A', 'ONLINE'), ('SM-002', 'Gardu Distribusi B', 'OFFLINE');
-SELECT * FROM devices;"`
+sudo mysql -e "CREATE DATABASE iot_inventory;"
+sudo mysql -e "CREATE USER 'iot_admin'@'localhost' IDENTIFIED BY 'PassDB2026!';"
+sudo mysql -e "GRANT ALL PRIVILEGES ON iot_inventory.* TO 'iot_admin'@'localhost'; FLUSH PRIVILEGES;"
+sudo mysql iot_inventory -e "CREATE TABLE devices (id INT AUTO_INCREMENT PRIMARY KEY, serial_no VARCHAR(30), lokasi VARCHAR(50), status VARCHAR(15));"
+sudo mysql iot_inventory -e "INSERT INTO devices (serial_no, lokasi, status) VALUES ('SM-001', 'Gardu Induk Bergas', 'ACTIVE'), ('SM-002', 'Panel Utama B', 'ACTIVE');"
+sudo mysql iot_inventory -e "SELECT * FROM devices;"`
       }
     ],
-    goal: 'Tabel devices berhasil dibuat dan menampilkan dua baris data perangkat melalui perintah terminal.'
+    goal: "Data perangkat berhasil disimpan dan ditampilkan kembali dari database MariaDB menggunakan perintah SQL."
   },
   {
-    week: 'w3',
-    day: 19, title: 'Otomasi Backup & Disaster Recovery Database',
+    day: 19, week: "w3",
+    title: "Backup & Disaster Recovery Database Otomatis",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Dump Database Otomatis & Uji Simulasi Pemulihan',
-        d: 'Lakukan pencadangan penuh database iot_db menggunakan mysqldump, hapus tabel secara sengaja untuk simulasi bencana, lalu pulihkan kembali dari file backup.',
-        cmd: `mkdir -p ~/db_backups
-mysqldump -u iot_admin -p'DbPass2026!' iot_db > ~/db_backups/iot_db_backup.sql
-mysql -u iot_admin -p'DbPass2026!' iot_db -e "DROP TABLE devices;"
-mysql -u iot_admin -p'DbPass2026!' iot_db < ~/db_backups/iot_db_backup.sql
-mysql -u iot_admin -p'DbPass2026!' iot_db -e "SELECT * FROM devices;"`
+        name: "Blok 1-3 (6 Jam): Ekspor SQL dengan mysqldump & Simulasi Pemulihan Data",
+        steps: [
+          "Cadangkan database <code>iot_inventory</code> ke file SQL terkompresi, hapus database untuk simulasi bencana, lalu pulihkan kembali dari file backup."
+        ],
+        code: `mysqldump -u iot_admin -p'PassDB2026!' iot_inventory | gzip > ~/backups/iot_inventory_dump.sql.gz
+sudo mysql -e "DROP DATABASE iot_inventory;"
+sudo mysql -e "CREATE DATABASE iot_inventory;"
+gunzip -c ~/backups/iot_inventory_dump.sql.gz | mysql -u iot_admin -p'PassDB2026!' iot_inventory
+sudo mysql iot_inventory -e "SELECT * FROM devices;"`
       }
     ],
-    goal: 'Data tabel devices yang sempat terhapus kembali utuh 100% setelah proses restore dijalankan.'
+    goal: "Seluruh tabel dan baris data SM-001 & SM-002 utuh kembali setelah simulasi penghapusan database."
   },
   {
-    week: 'w3',
-    day: 20, title: 'Inspeksi Paket Jaringan Real-Time dengan tcpdump',
+    day: 20, week: "w3",
+    title: "Inspeksi Paket Jaringan Terminal dengan tcpdump",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Membuktikan Perbedaan Keamanan HTTP vs HTTPS di Level Paket',
-        d: 'Gunakan tcpdump untuk menangkap lalu lintas jaringan loopback saat mengirim data sensitif tanpa enkripsi dibanding lewat TLS.',
-        cmd: `sudo apt install -y tcpdump
-sudo tcpdump -i lo -A -c 20 port 80 &
-sleep 1
-curl -s "http://localhost/?user=admin&pass=Rahasia123" > /dev/null
-wait`
+        name: "Blok 1-3 (6 Jam): Menangkap Lalu Lintas Jaringan & Membandingkan Enkripsi",
+        steps: [
+          "Instal <code>tcpdump</code>, tangkap paket lalu lintas pada port 443 (HTTPS) atau ICMP, dan simpan ke file <code>.pcap</code> untuk analisis."
+        ],
+        code: `sudo apt install -y tcpdump
+sudo tcpdump -i enp0s3 -c 20 -nn port 443 or icmp
+sudo tcpdump -i enp0s3 -c 50 -w ~/backups/capture_latihan.pcap`
       }
     ],
-    goal: 'Terlihat jelas teks "user=admin&pass=Rahasia123" terbaca telanjang di output tcpdump pada port 80, membuktikan urgensi enkripsi.'
+    goal: "Berhasil merekam paket lalu lintas jaringan ke file capture_latihan.pcap dan membaca header paket secara langsung di terminal."
   },
   {
-    week: 'w3',
-    day: 21, title: 'ISTIRAHAT TOTAL & REVIEW MINGGU 03',
+    day: 21, week: "w3",
+    title: "ISTIRAHAT & PEMULIHAN (OFFLINE RECOVERY DAY)",
     blocks: [
       {
-        t: 'PROTOKOL PEMULIHAN (0 Jam Layar Teknis)',
-        d: 'Istirahat penuh hari ke-21 sebelum memasuki minggu terakhir Bulan 01 (Kontainerisasi Docker).',
-        cmd: `# Istirahat total hari ke-21.`
+        name: "Protokol Minggu 3 Selesai",
+        steps: [
+          "Istirahat penuh dari layar teknis. Buat Snapshot VirtualBox baru bernama <code>Minggu3-Services</code>."
+        ]
       }
     ],
-    goal: 'Kesiapan mental penuh untuk menguasai Docker di Minggu 04.'
+    goal: "Siap memasuki minggu terakhir Fase 01 yaitu kontainerisasi Docker dan ujian praktik."
   },
-
-  // MINGGU 4
   {
-    week: 'w4', weekTitle: 'MINGGU 04 // KONTAINERISASI DOCKER, DOCKER COMPOSE & UJIAN BULAN 01',
-    day: 22, title: 'Instalasi Docker Engine & Manajemen Siklus Hidup Kontainer',
+    day: 22, week: "w4",
+    title: "Instalasi Docker Engine & Manajemen Kontainer Dasar",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Setup Docker & Menjalankan Kontainer Pertama',
-        d: 'Instal Docker Engine resmi, masukkan user aktif ke grup docker agar tidak perlu selalu mengetik sudo, dan jalankan kontainer uji.',
-        cmd: `sudo apt install -y docker.io docker-compose-v2
+        name: "Blok 1-3 (6 Jam): Memasang Docker Resmi & Menjalankan Kontainer Pertama",
+        steps: [
+          "Instal Docker Engine di Ubuntu Server, tambahkan user <code>adminiot</code> ke grup <code>docker</code> agar tidak perlu mengetik <code>sudo</code> setiap kali menjalankan Docker."
+        ],
+        code: `sudo apt update && sudo apt install -y docker.io docker-compose-v2
 sudo usermod -aG docker $USER
-newgrp docker << 'EOF'
+newgrp docker
 docker run --rm hello-world
 docker run -d --name web-uji -p 8080:80 nginx:alpine
-docker ps
-docker stop web-uji && docker rm web-uji
-EOF`
+docker ps`
       }
     ],
-    goal: 'Kontainer Nginx berbasis Alpine berjalan di port 8080 dan dapat dibersihkan kembali tanpa sisa.'
+    goal: "Kontainer web-uji berjalan di latar belakang dan dapat diakses melalui http://192.168.1.150:8080 (buka port 8080 di UFW jika diperlukan)."
   },
   {
-    week: 'w4',
-    day: 23, title: 'Docker Volume (Penyimpanan Persisten) & Jaringan Internal Kontainer',
+    day: 23, week: "w4",
+    title: "Manajemen Docker Volume (Data Permanen) & Bridge Network",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Memisahkan Data dari Kontainer Sementara',
-        d: 'Buat custom bridge network dan named volume agar data tetap aman meskipun kontainer dihapus dan dibuat ulang.',
-        cmd: `docker network create iot-net
-docker volume create iot-vol
-docker run -d --name node-db --network iot-net -v iot-vol:/data alpine sleep 3600
-docker exec node-db sh -c "echo 'Data Sensor Permanen' > /data/record.txt"
-docker rm -f node-db
-docker run --rm -v iot-vol:/data alpine cat /data/record.txt`
+        name: "Blok 1-3 (6 Jam): Menyimpan Data Kontainer Secara Permanen",
+        steps: [
+          "Buat Docker Volume dan jaringan terisolasi, lalu buktikan bahwa data di dalam volume tetap bertahan meskipun kontainernya dihapus."
+        ],
+        code: `docker volume create data_iot_vol
+docker network create jaringan_iot
+docker run -d --name c1 --network jaringan_iot -v data_iot_vol:/data alpine sh -c "echo 'Data Sensor Permanen' > /data/log.txt && sleep 3600"
+docker rm -f c1
+docker run --rm -v data_iot_vol:/data alpine cat /data/log.txt`
       }
     ],
-    goal: 'Teks "Data Sensor Permanen" tetap terbaca dari volume meskipun kontainer pertama sudah dihapus.'
+    goal: "Teks 'Data Sensor Permanen' tetap terbaca utuh meskipun kontainer c1 sudah dihapus."
   },
   {
-    week: 'w4',
-    day: 24, title: 'Membangun Custom Image dengan Dockerfile',
+    day: 24, week: "w4",
+    title: "Membangun Custom Image dengan Dockerfile",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Membungkus Aplikasi Monitoring ke dalam Image Mandiri',
-        d: 'Tulis Dockerfile berbasis Python/Alpine yang menjalankan skrip diagnostik ringan, lalu build menjadi image siap pakai.',
-        cmd: `mkdir -p ~/docker-custom && cd ~/docker-custom
-cat << 'EOF' > Dockerfile
-FROM alpine:latest
-RUN apk add --no-cache bash curl
-CMD ["bash", "-c", "while true; do echo '[CONTAINER] Telemetry Heartbeat OK'; sleep 15; done"]
+        name: "Blok 1-3 (6 Jam): Membungkus Aplikasi Python ke Dalam Image Docker",
+        steps: [
+          "Buat folder <code>~/docker-app</code> berisi aplikasi Python sederhana dan <code>Dockerfile</code>, lalu bangun image kustom."
+        ],
+        code: `mkdir -p ~/docker-app && cd ~/docker-app
+cat << 'EOF' > app.py
+import time, datetime
+while True:
+    print(f"[{datetime.datetime.now()}] Telemetry Agent Running...", flush=True)
+    time.sleep(5)
 EOF
-docker build -t iot-telemetry-agent:1.0 .
-docker images | grep iot-telemetry-agent`
+
+cat << 'EOF' > Dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY app.py .
+CMD ["python3", "app.py"]
+EOF
+
+docker build -t telemetry-agent:1.0 .
+docker run -d --name agent-test telemetry-agent:1.0
+docker logs -f --tail 5 agent-test`
       }
     ],
-    goal: 'Image kustom "iot-telemetry-agent:1.0" berhasil dibuat dan terdaftar di daftar image lokal.'
+    goal: "Custom image telemetry-agent:1.0 berhasil dibangun dan mengeluarkan log telemetri setiap 5 detik."
   },
   {
-    week: 'w4',
-    day: 25, title: 'Orkestrasi Multi-Kontainer dengan Docker Compose',
+    day: 25, week: "w4",
+    title: "Orkestrasi Multi-Kontainer Menggunakan Docker Compose",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Menjalankan Stack Web + Database dalam Satu File YAML',
-        d: 'Buat file docker-compose.yml untuk menyalakan reverse proxy Nginx dan database MariaDB secara bersamaan dalam satu jaringan terisolasi.',
-        cmd: `mkdir -p ~/compose-lab && cd ~/compose-lab
+        name: "Blok 1-3 (6 Jam): Menjalankan Web Server + Database Sekaligus",
+        steps: [
+          "Buat file <code>docker-compose.yml</code> yang menggabungkan layanan Nginx dan MariaDB dalam satu jaringan terpadu."
+        ],
+        code: `mkdir -p ~/stack-latihan && cd ~/stack-latihan
 cat << 'EOF' > docker-compose.yml
 services:
   web:
@@ -952,8 +988,8 @@ services:
   db:
     image: mariadb:10.11
     environment:
-      MARIADB_ROOT_PASSWORD: RootLabPass2026!
-      MARIADB_DATABASE: telemetry
+      MARIADB_ROOT_PASSWORD: RootSecretPassword123
+      MARIADB_DATABASE: smart_grid
     volumes:
       - db_data:/var/lib/mysql
     restart: unless-stopped
@@ -964,192 +1000,182 @@ docker compose up -d
 docker compose ps`
       }
     ],
-    goal: 'Kedua layanan (web dan db) berstatus "Up" secara bersamaan hanya dengan satu perintah docker compose up -d.'
+    goal: "Kedua layanan (web dan db) berjalan serentak dengan status Up melalui satu perintah docker compose up -d."
   },
   {
-    week: 'w4',
-    day: 26, title: 'UJIAN MANDIRI BULAN 01 (BAGIAN 1) — Provisioning & Hardening Server',
+    day: 26, week: "w4",
+    title: "Ujian Mandiri Bulan 1 (Hari 1/3): Rekonstruksi Server Bersih",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Audit & Pengerasan Sistem Tanpa Melihat Catatan',
-        d: 'Verifikasi seluruh lapisan keamanan dasar server kamu: SSH tanpa password/root, UFW aktif hanya mengizinkan port esensial, dan layanan watchdog berjalan otomatis.',
-        cmd: `sudo ufw status
-sudo sshd -T | grep -E "permitrootlogin|passwordauthentication"
-systemctl is-active iot-heartbeat`
+        name: "Blok 1-3 (6 Jam): Tantangan Tanpa Melihat Catatan",
+        steps: [
+          "Buat VM baru di VirtualBox bernama <code>Ujian-Fase01</code> dengan Ubuntu Server 24.04 LTS.",
+          "Konfigurasikan IP Statis Netplan, SSH Key-Based Authentication di port kustom, dan aktifkan firewall UFW ketat."
+        ]
       }
     ],
-    goal: 'Seluruh pemeriksaan keamanan mengembalikan konfigurasi aman tanpa celah default.'
+    goal: "Server ujian online dengan IP Statis, SSH hanya bisa diakses lewat kunci kriptografi, dan seluruh port tak terpakai tertutup UFW."
   },
   {
-    week: 'w4',
-    day: 27, title: 'UJIAN MANDIRI BULAN 01 (BAGIAN 2) — Deploy Stack & Automasi Backup',
+    day: 27, week: "w4",
+    title: "Ujian Mandiri Bulan 1 (Hari 2/3): Otomasi & Stack Kontainer",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Integrasi Layanan Kontainer & Jadwal Pemeliharaan',
-        d: 'Pastikan seluruh kontainer Docker Compose berjalan stabil, port HTTP 8088 dapat diakses, dan skrip backup otomatis berjalan tanpa error.',
-        cmd: `cd ~/compose-lab && docker compose up -d
-curl -I http://localhost:8088
-~/scripts/health_check.sh && tail -n 3 ~/scripts/health.log`
+        name: "Blok 1-3 (6 Jam): Implementasi Watchdog, Backup Cron & Docker Compose",
+        steps: [
+          "Pasang skrip pemantau kesehatan server (CSV) dan backup otomatis pada cron di server ujian.",
+          "Jalankan stack Docker Compose berisi reverse-proxy Nginx dan database MariaDB dengan volume permanen."
+        ]
       }
     ],
-    goal: 'Infrastruktur server siap dijadikan fondasi backend IoT pada Bulan ke-2.'
+    goal: "Seluruh stack Docker dan penjadwalan cron berjalan otomatis tanpa intervensi manual."
   },
   {
-    week: 'w4',
-    day: 28, title: 'UJIAN MANDIRI BULAN 01 (BAGIAN 3) — Simulasi Pemulihan Pasca-Reboot',
+    day: 28, week: "w4",
+    title: "Ujian Mandiri Bulan 1 (Hari 3/3): Audit Reboot & Simulasi Gangguan",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Uji Ketahanan Reboot Penuh',
-        d: 'Lakukan reboot penuh pada server Ubuntu dan pastikan seluruh layanan (SSH, UFW, Systemd Heartbeat, MariaDB, dan kontainer Docker) menyala kembali secara otomatis tanpa intervensi manual.',
-        cmd: `# Jalankan setelah server menyala kembali pasca reboot:
-systemctl is-active ssh ufw mariadb iot-heartbeat
-docker ps --format "table {{.Names}}\t{{.Status}}"`
+        name: "Blok 1-3 (6 Jam): Uji Ketahanan Pasca Reboot",
+        steps: [
+          "Lakukan <code>sudo reboot</code> pada server ujian, lalu verifikasi bahwa IP Statis, UFW, layanan systemd, cron, dan seluruh kontainer Docker kembali aktif otomatis."
+        ]
       }
     ],
-    goal: '100% layanan kritis menyala otomatis sesaat setelah server selesai booting.'
+    goal: "100% layanan pulih otomatis dalam waktu kurang dari 60 detik setelah reboot."
   },
   {
-    week: 'w4',
-    day: 29, title: 'Dokumentasi Arsitektur Bulan 01 ke GitHub',
+    day: 29, week: "w4",
+    title: "Dokumentasi Arsitektur Fase 01 ke GitHub",
     blocks: [
       {
-        t: 'BLOK 1-3 (6 Jam) — Menyusun README Profesional & Diagram Teks',
-        d: 'Perbarui repositori GitHub kamu dengan file docker-compose.yml serta panduan instalasi terstruktur agar perekrut dapat melihat standar kerja administrasi Linux kamu.',
-        cmd: `cd ~/scripts
-cp ~/compose-lab/docker-compose.yml ./sample-stack.yml
-git add .
-git commit -m "Docs: Selesai Fase 01 Linux Server & Docker Stack"
-git status`
+        name: "Blok 1-3 (6 Jam): Menyusun README.md Profesional",
+        steps: [
+          "Unggah file <code>docker-compose.yml</code>, <code>Dockerfile</code>, dan dokumentasi topologi server Linux kamu ke repositori GitHub dengan panduan instalasi yang jelas."
+        ]
       }
     ],
-    goal: 'Repositori GitHub Fase 01 terdokumentasi rapi dan siap dilanjutkan ke Fase 02.'
+    goal: "Portofolio Fase 01 terpublikasi rapi di GitHub dan siap ditunjukkan kepada perekrut."
   },
   {
-    week: 'w4',
-    day: 30, title: 'ISTIRAHAT TOTAL — SELESAI FASE 01 (30 HARI PERTAMA)',
+    day: 30, week: "w4",
+    title: "ISTIRAHAT & EVALUASI AKHIR FASE 01",
     blocks: [
       {
-        t: 'PROTOKOL PEMULIHAN (0 Jam Layar Teknis)',
-        d: 'Selamat! Kamu telah menyelesaikan 180 jam praktik Fondasi Linux Server & Jaringan. Istirahat total hari ini sebelum masuk ke Fase 02 (Server IoT, MQTT, InfluxDB, Grafana & Node-RED).',
-        cmd: `# Selamat atas pencapaian 30 hari pertama! Lanjut ke Fase 02 besok.`
+        name: "Protokol Fase 01 Tuntas (180 Jam Praktik)",
+        steps: [
+          "Selamat! Kamu telah menguasai fondasi administrasi Linux Server, jaringan, Bash scripting, dan Docker di lingkungan VirtualBox.",
+          "Ambil istirahat penuh sebelum melangkah ke <strong>Fase 02 (Hari 31–60): Server IoT, MQTT, InfluxDB, Grafana & Node-RED</strong>."
+        ]
       }
     ],
-    goal: 'Siap masuk ke Fase 02 (Hari 31–60).'
+    goal: "Seluruh 30 hari Fase 01 tercentang selesai dan siap masuk ke tahap pembangunan infrastruktur IoT."
   }
 ];
 
-const STORAGE_KEY = 'cyberpunk_roadmap_fase1_v2';
-let progressState = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-let currentFilter = 'all';
-let allExpanded = false;
+const container = document.getElementById('modules-container');
+let completedDays = JSON.parse(localStorage.getItem('iot_roadmap_f1') || '{}');
 
-function updateProgressUI() {
-  const doneCount = Object.values(progressState).filter(Boolean).length;
-  document.getElementById('progress-display').textContent = `PROGRES FASE 01: ${doneCount} / 30 HARI`;
+function renderModules() {
+  container.innerHTML = '';
+  modules.forEach(m => {
+    const isDone = !!completedDays[m.day];
+    const card = document.createElement('div');
+    card.className = `day-card ${isDone ? 'completed' : ''}`;
+    card.dataset.week = m.week;
+
+    let blocksHtml = m.blocks.map(b => {
+      let stepsHtml = b.steps.map(s => `<li>${s}</li>`).join('');
+      let codeHtml = b.code ? `
+        <div class="code-wrap">
+          <div class="code-top">
+            <span>TERMINAL // UBUNTU SERVER (VIRTUALBOX)</span>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <pre>${escapeHtml(b.code)}</pre>
+        </div>` : '';
+      return `
+        <div class="block-box">
+          <div class="block-title">${b.name}</div>
+          <ol class="step-list">${stepsHtml}</ol>
+          ${codeHtml}
+        </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="day-header" onclick="toggleCard(this)">
+        <div class="day-meta">
+          <span class="day-badge">HARI ${String(m.day).padStart(2, '0')} // ${m.week.toUpperCase()}</span>
+          <div class="day-title">${m.title}</div>
+        </div>
+        <div class="day-actions" onclick="event.stopPropagation()">
+          <label class="check-label">
+            <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleComplete(${m.day}, this)">
+            SELESAI
+          </label>
+          <span class="chevron" onclick="toggleCard(this.parentElement.parentElement)">&#9662;</span>
+        </div>
+      </div>
+      <div class="day-body">
+        ${blocksHtml}
+        <div class="goal-box"><strong>KRITERIA LULUS (GOAL HARI ${String(m.day).padStart(2, '0')}):</strong> ${m.goal}</div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  updateProgress();
 }
 
-function toggleCheck(day, checkbox, event) {
-  event.stopPropagation();
-  progressState[day] = checkbox.checked;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(progressState));
-  const card = document.getElementById(`day-card-${day}`);
-  if (checkbox.checked) card.classList.add('completed');
-  else card.classList.remove('completed');
-  updateProgressUI();
+function escapeHtml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-function toggleCard(day) {
-  const card = document.getElementById(`day-card-${day}`);
-  card.classList.toggle('open');
+function toggleCard(headerEl) {
+  headerEl.parentElement.classList.toggle('open');
 }
 
-function toggleAllCards() {
-  allExpanded = !allExpanded;
+let allOpen = false;
+function toggleAll() {
+  allOpen = !allOpen;
   document.querySelectorAll('.day-card').forEach(c => {
-    if (allExpanded) c.classList.add('open');
+    if (allOpen) c.classList.add('open');
     else c.classList.remove('open');
   });
 }
 
 function filterWeek(week, btn) {
-  currentFilter = week;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  renderModules();
+  document.querySelectorAll('.day-card').forEach(c => {
+    c.style.display = (week === 'all' || c.dataset.week === week) ? 'block' : 'none';
+  });
+}
+
+function toggleComplete(day, checkbox) {
+  if (checkbox.checked) completedDays[day] = true;
+  else delete completedDays[day];
+  localStorage.setItem('iot_roadmap_f1', JSON.stringify(completedDays));
+  checkbox.closest('.day-card').classList.toggle('completed', checkbox.checked);
+  updateProgress();
+}
+
+function updateProgress() {
+  const count = Object.keys(completedDays).length;
+  document.getElementById('progress-counter').textContent = `PROGRES FASE 01: ${count} / 30 HARI`;
 }
 
 function copyCode(btn) {
-  const pre = btn.closest('.cmd-wrap').querySelector('pre');
-  navigator.clipboard.writeText(pre.textContent).then(() => {
+  const code = btn.closest('.code-wrap').querySelector('pre').innerText;
+  navigator.clipboard.writeText(code).then(() => {
     const orig = btn.textContent;
     btn.textContent = 'COPIED!';
-    btn.style.background = '#00ff88';
-    btn.style.color = '#000';
-    setTimeout(() => {
-      btn.textContent = orig;
-      btn.style.background = '';
-      btn.style.color = '';
-    }, 1500);
+    btn.style.background = '#00ff9d';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = '#00f3ff'; }, 1500);
   });
-}
-
-function renderModules() {
-  const container = document.getElementById('modules-container');
-  container.innerHTML = '';
-  modulesData.forEach(item => {
-    if (currentFilter !== 'all' && item.week !== currentFilter) return;
-    if (item.weekTitle) {
-      const wh = document.createElement('div');
-      wh.className = 'week-header';
-      wh.textContent = item.weekTitle;
-      container.appendChild(wh);
-    }
-    const isDone = !!progressState[item.day];
-    const card = document.createElement('div');
-    card.className = `day-card ${isDone ? 'completed' : ''} ${item.day === 1 ? 'open' : ''}`;
-    card.id = `day-card-${item.day}`;
-
-    let blocksHTML = item.blocks.map(b => `
-      <div class="block-box">
-        <div class="block-title">${b.t}</div>
-        <div class="block-desc">${b.d}</div>
-        <div class="cmd-wrap">
-          <div class="cmd-top">
-            <span>BASH // TERMINAL</span>
-            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
-          </div>
-          <pre>${b.cmd.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
-        </div>
-      </div>
-    `).join('');
-
-    card.innerHTML = `
-      <div class="day-header" onclick="toggleCard(${item.day})">
-        <div class="day-title-wrap">
-          <span class="day-tag">HARI ${String(item.day).padStart(2, '0')}</span>
-          <span class="day-title">${item.title}</span>
-        </div>
-        <div class="day-actions">
-          <label class="check-label" onclick="event.stopPropagation()">
-            <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleCheck(${item.day}, this, event)">
-            SELESAI
-          </label>
-          <span class="chevron">&#9660;</span>
-        </div>
-      </div>
-      <div class="day-body">
-        ${blocksHTML}
-        <div class="goal-box"><strong>GOAL & VERIFIKASI LULUS:</strong> ${item.goal}</div>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-  updateProgressUI();
 }
 
 renderModules();
 
-// 3D CYBERPUNK CANVAS ENGINE
+// 3D Cyberpunk Background Engine
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
 let w, h, offset = 0, mouseX = 0, mouseY = 0;
@@ -1165,54 +1191,58 @@ window.addEventListener('mousemove', e => {
 });
 resize();
 
-const nodes = Array.from({ length: 18 }, () => ({
-  x: (Math.random() - 0.5) * 1200,
-  y: (Math.random() - 0.5) * 600,
-  z: Math.random() * 1000 + 100,
-  size: Math.random() * 18 + 8,
+const nodes = Array.from({length: 14}, () => ({
+  x: (Math.random() - 0.5) * 900,
+  y: (Math.random() - 0.5) * 500 - 120,
+  z: Math.random() * 800 + 100,
+  size: Math.random() * 16 + 8,
   rot: Math.random() * Math.PI * 2,
-  speed: (Math.random() - 0.5) * 0.02
+  color: Math.random() > 0.5 ? '#00f3ff' : '#ff007f'
 }));
 
 function draw() {
-  ctx.fillStyle = '#04060d';
+  ctx.fillStyle = '#05070e';
   ctx.fillRect(0, 0, w, h);
 
-  const horizon = h * 0.52 + mouseY;
+  const horizon = h * 0.48 + mouseY;
   const cx = w * 0.5 + mouseX;
 
   // Horizon Glow
-  const grad = ctx.createLinearGradient(0, horizon - 120, 0, horizon + 120);
-  grad.addColorStop(0, 'rgba(0, 243, 255, 0)');
-  grad.addColorStop(0.5, 'rgba(0, 243, 255, 0.14)');
-  grad.addColorStop(1, 'rgba(255, 0, 127, 0)');
+  const grad = ctx.createLinearGradient(0, horizon - 80, 0, horizon + 120);
+  grad.addColorStop(0, 'rgba(255, 0, 127, 0)');
+  grad.addColorStop(0.5, 'rgba(0, 243, 255, 0.16)');
+  grad.addColorStop(1, 'rgba(5, 7, 14, 0)');
   ctx.fillStyle = grad;
-  ctx.fillRect(0, horizon - 120, w, 240);
+  ctx.fillRect(0, horizon - 80, w, 200);
 
-  // 3D Floor Grid
-  ctx.strokeStyle = 'rgba(0, 243, 255, 0.18)';
+  // 3D Perspective Grid Floor
+  ctx.strokeStyle = 'rgba(0, 243, 255, 0.22)';
   ctx.lineWidth = 1;
-  for (let i = -14; i <= 14; i++) {
+  for (let i = -16; i <= 16; i++) {
     ctx.beginPath();
-    ctx.moveTo(cx + i * 35, horizon);
-    ctx.lineTo(cx + i * 260, h);
-    ctx.stroke();
-  }
-  offset = (offset + 0.6) % 40;
-  for (let z = 1; z < 16; z++) {
-    const p = Math.pow((z * 40 + offset) / 640, 2);
-    const y = horizon + p * (h - horizon);
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(w, y);
+    ctx.moveTo(cx + i * 25, horizon);
+    ctx.lineTo(cx + i * 180, h);
     ctx.stroke();
   }
 
-  // Floating 3D Wireframe Polyhedrons
+  offset = (offset + 0.6) % 40;
+  for (let z = 10; z < 500; z += 40) {
+    let pz = z + offset;
+    let scale = 260 / pz;
+    let y = horizon + scale * 140;
+    if (y <= h) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+  }
+
+  // Floating 3D Wireframe Diamonds
   nodes.forEach(n => {
-    n.z -= 1.8;
-    n.rot += n.speed;
-    if (n.z <= 20) n.z = 1000;
+    n.z -= 1.2;
+    n.rot += 0.015;
+    if (n.z < 50) n.z = 900;
     const scale = 320 / n.z;
     const sx = cx + n.x * scale;
     const sy = horizon + n.y * scale;
@@ -1221,10 +1251,9 @@ function draw() {
     ctx.save();
     ctx.translate(sx, sy);
     ctx.rotate(n.rot);
-    ctx.strokeStyle = n.z < 400 ? 'rgba(255, 0, 127, 0.35)' : 'rgba(0, 243, 255, 0.25)';
+    ctx.strokeStyle = n.color;
+    ctx.globalAlpha = Math.min(0.65, scale * 0.7);
     ctx.lineWidth = 1.2;
-    ctx.strokeRect(-r / 2, -r / 2, r, r);
-    ctx.rotate(Math.PI / 4);
     ctx.strokeRect(-r / 2, -r / 2, r, r);
     ctx.restore();
   });
